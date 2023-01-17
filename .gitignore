@@ -127,3 +127,11 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.idea
+Dict
+Lead_status_changed
+Leads
+Pipelines
+Users
+timefunc.py
+pw.py
