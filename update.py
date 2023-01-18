@@ -1,6 +1,6 @@
 import DataFunc
 from MainFunc import create_dict, create_api, update_insert, update_token, create_api_filter, pipeline_statuses_count, \
-    delete_all_files
+    delete_all_files, get_token
 from DB_Operations import update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date
 
 # авторизация и получение нового токена

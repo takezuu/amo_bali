@@ -111,7 +111,6 @@ def get_token():
     """Получает первый токен"""
     new_tokens = authorization()
     DataFunc.write_tokens(tokens=new_tokens)
-    # new_tokens = DataFunc.read_token()
     DB_Operations.insert_tk_table(records_to_insert=new_tokens)
     print('Got access_token')
 
@@ -119,6 +118,8 @@ def get_token():
 def update_token():
     """Обновляет токен"""
     tokens = DB_Operations.read_tokens()
+    # tokens = DataFunc.read_token()
+    # new_tokens = get_refresh_token(refresh_token=tokens['refresh_token'])
     new_tokens = get_refresh_token(refresh_token=tokens[1])
     DataFunc.write_tokens(tokens=new_tokens)
     DB_Operations.insert_tk_table(records_to_insert=new_tokens)
