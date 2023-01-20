@@ -295,8 +295,6 @@ def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str):
 
 def get_custom_fields_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
-    archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
-    block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     records_to_insert = []
     for lead in data.keys():
         lead_id = int(lead)
@@ -357,5 +355,7 @@ def get_lead_status_changed(data) -> list:
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     return [(convert_time(lead['created_at']), lead['entity_id']) for lead in data['_embedded']['events'] if
-            (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines) or
-            (lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines)]
+            ((lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines) or
+            (lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines)) and
+            (convert_time(lead['created_at']) >= datetime.date.today() or
+             convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]

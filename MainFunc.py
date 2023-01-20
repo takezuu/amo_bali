@@ -89,8 +89,9 @@ def first_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_pr
         print(page_num, 'page')
     except FileNotFoundError:
         return False
-    records_to_insert = funcc(data=file_data, **kwargs)
-    insert_funcc(records_to_insert)
+    if len(file_data) > 0:
+        records_to_insert = funcc(data=file_data, **kwargs)
+        insert_funcc(records_to_insert)
     return True
 
 
@@ -102,8 +103,9 @@ def update_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_p
         print(page_num, 'page')
     except FileNotFoundError:
         return False
-    records_to_insert = funcc(data=file_data, **kwargs)
-    insert_funcc(records_to_insert)
+    if len(file_data) > 0:
+        records_to_insert = funcc(data=file_data, **kwargs)
+        insert_funcc(records_to_insert)
     return True
 
 
