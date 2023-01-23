@@ -12,10 +12,11 @@ def api_decorator(func):
     """Цикл while для api функций"""
 
     def inner(api_name: str):
+        tokens = DB_Operations.read_tokens()
         page_num = 1
         req = True
         while req:
-            req = func(page_num, api_name)
+            req = func(page_num, api_name, tokens)
             page_num += 1
 
     return inner
@@ -49,9 +50,8 @@ def insert_decorator(func):
 
 # функции
 @api_decorator
-def create_api(page_num: int, api_name: str):
+def create_api(page_num: int, api_name: str, tokens):
     """Формирование файлов с данными из api"""
-    tokens = DB_Operations.read_tokens()
     data = api_requests.api_get_request(tokens=tokens, page_num=page_num, api_name=api_name)
     DataFunc.write_data(data=data, page_num=page_num, name_of_data=api_name)
     file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=api_name)
@@ -59,9 +59,8 @@ def create_api(page_num: int, api_name: str):
 
 
 @api_decorator
-def create_api_filter(page_num: int, api_name: str):
+def create_api_filter(page_num: int, api_name: str, tokens):
     """Формирование файлов с данными из api"""
-    tokens = DB_Operations.read_tokens()
     data = api_requests.api_filter_get_request(tokens=tokens, page_num=page_num, api_name=api_name)
     DataFunc.write_data(data=data, page_num=page_num, name_of_data=api_name)
     file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=api_name)

@@ -205,7 +205,6 @@ def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def insert_tk_table(records_to_insert, connection, cursor) -> None:
     """Обновляет и записывает токены в базу"""
-    print(len(records_to_insert))
     insert_query = f"""INSERT INTO tk_table (
     ID, access_token, refresh_token)
     VALUES (1, '{records_to_insert["access_token"]}', '{records_to_insert["refresh_token"]}')

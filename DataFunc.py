@@ -364,11 +364,25 @@ def get_utm_record(data: json) -> list:
 
 def get_lead_status_changed(data) -> list:
     """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
-    archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
+    archive_pipelines = {}#read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
-    return [(convert_time(lead['created_at']), lead['entity_id']) for lead in data['_embedded']['events'] if
+    status_changed = [[lead['entity_id'], lead['created_at']] for lead in data['_embedded']['events'] if
             (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines and
              lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines)]
+
+    final_status_changed = {}
+    for status in status_changed:
+        if status[0] not in final_status_changed:
+            final_status_changed[status[0]] = status[1]
+        else:
+            if status[1] > final_status_changed[status[0]]:
+                final_status_changed[status[0]] = status[1]
+
+    records = []
+    for k, v in final_status_changed.items():
+        records.append((convert_time(v), k))
+
+    return records
 
 
 def get_lead_status_changed_update(data) -> list:
@@ -376,8 +390,22 @@ def get_lead_status_changed_update(data) -> list:
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
 
-    return [(convert_time(lead['created_at']), lead['entity_id']) for lead in data['_embedded']['events'] if
+    status_changed = [[lead['created_at'], lead['entity_id']] for lead in data['_embedded']['events'] if
             (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines and
              lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines) and
             (convert_time(lead['created_at']) >= datetime.date.today() or
              convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]
+
+    final_status_changed = {}
+    for status in status_changed:
+        if status[0] not in final_status_changed:
+            final_status_changed[status[0]] = status[1]
+        else:
+            if status[1] > final_status_changed[status[0]]:
+                final_status_changed[status[0]] = status[1]
+
+    records = []
+    for k, v in final_status_changed.items():
+        records.append((convert_time(v), k))
+
+    return records
