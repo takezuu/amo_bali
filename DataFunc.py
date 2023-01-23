@@ -58,6 +58,16 @@ def convert_time(unix_time: int) -> datetime:
         return time
 
 
+def convert_time_with_time(unix_time: int) -> datetime:
+    """Конвертирует время из unix в обычный формат"""
+    try:
+        time = datetime.datetime.fromtimestamp(unix_time)
+    except TypeError:
+        return None
+    else:
+        return time
+
+
 def convert_group_id(group_id: int, group_dict) -> str:
     """Конвертирует group id"""
     if group_dict[str(group_id)]:
@@ -124,7 +134,7 @@ def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group
     records_to_insert = []
     leads = data['_embedded']['leads']
     for lead in leads:
-        if (str(lead['pipeline_id']) not in archive_pipelines) or (str(lead['pipeline_id']) not in block_pipelines):
+        if (str(lead['pipeline_id']) not in archive_pipelines and str(lead['pipeline_id']) not in block_pipelines):
             lead_id = lead['id']
             name = lead['name']
             price = lead['price']
@@ -157,7 +167,7 @@ def get_lead_update_record(data: json, pipelines_dict, statuses_dict, users_dict
     records_to_insert = []
     leads = data['_embedded']['leads']
     for lead in leads:
-        if ((str(lead['pipeline_id']) not in archive_pipelines) or (str(lead['pipeline_id']) not in block_pipelines)) and (
+        if (str(lead['pipeline_id']) not in archive_pipelines and str(lead['pipeline_id']) not in block_pipelines) and (
                 convert_time(lead['updated_at']) >= datetime.date.today() or convert_time(lead['updated_at']) == (
                 datetime.date.today() - datetime.timedelta(days=1))):
             lead_id = lead['id']
@@ -193,9 +203,11 @@ def get_users(users: json) -> dict:
 
 def get_pipelines(pipelines: json) -> dict:
     """Возвращает словарь воронок id+name"""
+    block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     pipelines = pipelines['_embedded']['pipelines']
     print('Словарь воронок готов')
-    return {pipeline['id']: pipeline['name'] for pipeline in pipelines if not pipeline['is_archive']}
+    return {pipeline['id']: pipeline['name'] for pipeline in pipelines if not pipeline['is_archive']
+            and pipeline['id'] not in block_pipelines}
 
 
 def get_archive_pipelines(pipelines: json) -> dict:
@@ -220,8 +232,8 @@ def get_leads_custom_fields_dict(leads) -> dict:
     leads = leads['_embedded']['leads']
     print('Словарь пользователей и доп.полей готов')
     return {lead['id']: [[field['field_name'], field['values'][0]['value']] for field in lead['custom_fields_values']]
-            for lead in leads if lead['custom_fields_values'] and (str(lead['pipeline_id']) not in archive_pipelines or
-            str(lead['pipeline_id']) not in block_pipelines)}
+            for lead in leads if lead['custom_fields_values'] and (str(lead['pipeline_id']) not in archive_pipelines and
+                                                                   str(lead['pipeline_id']) not in block_pipelines)}
 
 
 def get_leads_custom_fields_dict_update(leads) -> dict:
@@ -232,7 +244,7 @@ def get_leads_custom_fields_dict_update(leads) -> dict:
     print('Словарь пользователей и доп.полей готов для обновления')
     return {lead['id']: [[field['field_name'], field['values'][0]['value']] for field in lead['custom_fields_values']]
             for lead in leads if lead['custom_fields_values'] and ((str(lead['pipeline_id']) not in archive_pipelines
-                                                                    or str(lead['pipeline_id']) not in block_pipelines)
+                                                                    and str(lead['pipeline_id']) not in block_pipelines)
                                                                    and (convert_time(
                     lead['updated_at']) >= datetime.date.today() or convert_time(lead['updated_at']) ==
                                                                         (datetime.date.today() - datetime.timedelta(
@@ -355,7 +367,17 @@ def get_lead_status_changed(data) -> list:
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     return [(convert_time(lead['created_at']), lead['entity_id']) for lead in data['_embedded']['events'] if
-            ((lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines) or
-            (lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines)) and
+            (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines and
+             lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines)]
+
+
+def get_lead_status_changed_update(data) -> list:
+    """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
+    archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
+    block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
+
+    return [(convert_time(lead['created_at']), lead['entity_id']) for lead in data['_embedded']['events'] if
+            (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines and
+             lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines) and
             (convert_time(lead['created_at']) >= datetime.date.today() or
              convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]

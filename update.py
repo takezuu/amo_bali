@@ -4,7 +4,7 @@ from MainFunc import create_dict, create_api, update_insert, update_token, creat
 from DB_Operations import update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date
 
 # авторизация и получение нового токена
-update_token()
+# update_token()
 
 # запрос файлов из апи
 create_api(api_name='users')
@@ -41,7 +41,7 @@ update_insert(funcc=DataFunc.get_lead_update_record, insert_funcc=update_leads, 
               users_dict=users_dict, group_dict=group_dict1)
 
 # запись дат перехода в статусы в leads_table
-update_insert(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
+update_insert(funcc=DataFunc.get_lead_status_changed_update, insert_funcc=update_leads_pipelines_status_date,
               name_of_data='lead_status_changed')
 
 # запись custom_fields

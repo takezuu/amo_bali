@@ -4,14 +4,15 @@ from pw import DataBase
 
 def db_decorator(func):
     def inner(records_to_insert):
-        connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
-                                      host=DataBase.HOST, port=DataBase.PORT)
-        cursor = connection.cursor()
-        print('Connection success!')
-        func(records_to_insert, connection, cursor)
+        if len(records_to_insert) > 0:
+            connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
+                                          host=DataBase.HOST, port=DataBase.PORT)
+            cursor = connection.cursor()
+            print('Connection success!')
+            func(records_to_insert, connection, cursor)
 
-        connection.close()
-        print('Connection close!')
+            connection.close()
+            print('Connection close!')
 
     return inner
 
@@ -166,6 +167,7 @@ def create_table_tk(connection, cursor) -> None:
 @db_decorator
 def insert_leads(records_to_insert: list, connection, cursor) -> None:
     """Записывает сделки в базу"""
+    print(len(records_to_insert))
     insert_query = """INSERT INTO leads_table (
             ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,  Дата_перехода_на_этап, 
             Дата_создания, Дата_изменения, Дата_закрытия,
@@ -178,6 +180,7 @@ def insert_leads(records_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
     """Записывает дополнительные поля в базу"""
+    print(len(records_to_insert))
     insert_query = """INSERT INTO custom_fields_table (
             ID, Источник_заявки,  Форма_заявки, Канал_рекламы, Приоритет_клиента, Условия_оплаты ,
             Первая_сумма_оплаты, Первая_дата_платежа, Вторая_сумма_оплаты,  Вторая_дата_платежа, Остаток_платежа,
@@ -190,6 +193,7 @@ def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
     """Записывает utm поля в базу"""
+    print(len(records_to_insert))
     insert_query = """INSERT INTO utm_table (
             ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
             utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
@@ -201,6 +205,7 @@ def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def insert_tk_table(records_to_insert, connection, cursor) -> None:
     """Обновляет и записывает токены в базу"""
+    print(len(records_to_insert))
     insert_query = f"""INSERT INTO tk_table (
     ID, access_token, refresh_token)
     VALUES (1, '{records_to_insert["access_token"]}', '{records_to_insert["refresh_token"]}')
@@ -214,6 +219,7 @@ def insert_tk_table(records_to_insert, connection, cursor) -> None:
 @db_decorator
 def insert_pipeline_table(record_to_insert: list, connection, cursor) -> None:
     """Записывает сделки в базу"""
+    print(len(record_to_insert))
     insert_query = """INSERT INTO pipeline_table (
             Дата, Неразобранное, Получена_новая_заявка, Заявка_взята_в_работу, Клиент_квалифицирован, 
             Демонстрация_назначена, Демонстрация_проведена, КП_отправлено, Оплата_согласована,
@@ -241,17 +247,16 @@ def insert_pipeline_table(record_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def update_leads(records_to_insert: list, connection, cursor) -> None:
     """Обновляет сделки в базе"""
-    if records_to_insert:
-        print(records_to_insert)
+    print(len(records_to_insert))
     update_query = """INSERT INTO leads_table (
-            ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки, 
+            ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,
             Дата_создания, Дата_изменения, Дата_закрытия,
             Ближайшая_задача, Наличие_задачи, Просрочена_задача) \
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
             ON CONFLICT (id) DO UPDATE SET
             Название = EXCLUDED.Название, Бюджет = EXCLUDED.Бюджет, Состояние = EXCLUDED.Состояние, 
             Ответственный = EXCLUDED.Ответственный, Группа = EXCLUDED.Группа, Воронка = EXCLUDED.Воронка, 
-            Этап_воронки = EXCLUDED.Этап_воронки, 
+            Этап_воронки = EXCLUDED.Этап_воронки,
             Дата_создания = EXCLUDED.Дата_создания, Дата_изменения = EXCLUDED.Дата_изменения, 
             Дата_закрытия = EXCLUDED.Дата_закрытия, Ближайшая_задача = EXCLUDED.Ближайшая_задача, 
             Наличие_задачи = EXCLUDED.Наличие_задачи, Просрочена_задача = EXCLUDED.Просрочена_задача"""
@@ -262,6 +267,7 @@ def update_leads(records_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def update_leads_pipelines_status_date(records_to_insert: list, connection, cursor) -> None:
     """Записывает дату перехода в этап воронки"""
+    print(len(records_to_insert))
     insert_query = """UPDATE leads_table SET
             Дата_перехода_на_этап = %s WHERE ID = %s"""
 
@@ -272,8 +278,7 @@ def update_leads_pipelines_status_date(records_to_insert: list, connection, curs
 @db_decorator
 def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
     """Обновляет дополнительные поля в базе"""
-    if records_to_insert:
-        print(records_to_insert)
+    print(len(records_to_insert))
     update_query = """INSERT INTO custom_fields_table (
             ID, Источник_заявки,  Форма_заявки, Канал_рекламы, Приоритет_клиента, Условия_оплаты,
             Первая_сумма_оплаты, Первая_дата_платежа, Вторая_сумма_оплаты, Вторая_дата_платежа, Остаток_платежа,
@@ -293,8 +298,7 @@ def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
 @db_decorator
 def update_utm_table(records_to_insert: list, connection, cursor) -> None:
     """Обновляет utm в базе"""
-    if records_to_insert:
-        print(records_to_insert)
+    print(len(records_to_insert))
     update_query = """INSERT INTO utm_table (
             ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
             utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \

@@ -89,23 +89,21 @@ def first_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_pr
         print(page_num, 'page')
     except FileNotFoundError:
         return False
-    if len(file_data) > 0:
-        records_to_insert = funcc(data=file_data, **kwargs)
-        insert_funcc(records_to_insert)
+    records_to_insert = funcc(data=file_data, **kwargs)
+    insert_funcc(records_to_insert)
     return True
 
 
 @insert_decorator
-def update_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, **kwargs):
+def update_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, extra_func=None, **kwargs):
     """Обновление записей в базу"""
     try:
         file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data, extra_prefix=extra_prefix)
         print(page_num, 'page')
     except FileNotFoundError:
         return False
-    if len(file_data) > 0:
-        records_to_insert = funcc(data=file_data, **kwargs)
-        insert_funcc(records_to_insert)
+    records_to_insert = funcc(data=file_data, **kwargs)
+    insert_funcc(records_to_insert)
     return True
 
 
@@ -139,10 +137,10 @@ def pipeline_statuses_count():
         count = DB_Operations.select_pipeline_status_count(status)
         count_list.append(*count)
 
-
     if count_list:
         print(count_list)
         DB_Operations.insert_pipeline_table(count_list)
+
 
 def delete_all_files():
     dirs = ['Leads/', 'Users/', 'Pipelines/', 'Lead_status_changed/', 'Dict/']
