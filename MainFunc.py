@@ -171,7 +171,7 @@ def pipeline_statuses_count():
 
 
 def delete_all_files():
-    dirs = ['Leads/', 'Users/', 'Pipelines/', 'Lead_status_changed/', 'Dict/']
+    dirs = ['Leads/', 'Users/', 'Pipelines/', 'Lead_status_changed/', 'Dict/', 'Deleted_leads/']
 
     for dir in dirs:
         for f in os.listdir(dir):
