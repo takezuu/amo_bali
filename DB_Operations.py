@@ -46,12 +46,12 @@ def db_select_decorator(func):
 
 
 def db_delete_decorator(func):
-    def inner(name_of_table):
+    def inner(*args):
         connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                       host=DataBase.HOST, port=DataBase.PORT)
         cursor = connection.cursor()
         print('Connection success!')
-        func(name_of_table, connection, cursor)
+        func(connection, cursor, *args)
 
         connection.close()
         print('Connection close!')
@@ -346,3 +346,11 @@ def delete_table(name_of_table: str, connection, cursor) -> None:
     cursor.execute(delete_query)
     connection.commit()
     print('DELETE')
+
+@db_delete_decorator
+def delete_leads(connection, cursor, delete_list) -> None:
+    print(len(delete_list))
+    delete_query = """DELETE FROM leads_table WHERE ID = %s"""
+    cursor.executemany(delete_query, delete_list)
+    connection.commit()
+    print('DELETED LEADS')

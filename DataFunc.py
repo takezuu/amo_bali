@@ -409,3 +409,10 @@ def get_lead_status_changed_update(data) -> list:
         records.append((convert_time(v), k))
 
     return records
+
+def get_id_deleted_leads(data):
+    delete_list = []
+    for lead in data['_embedded']['leads']:
+        delete_list.append((lead['id'],))
+
+    return delete_list
