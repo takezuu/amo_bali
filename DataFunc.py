@@ -268,7 +268,8 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
                      'Дата Договор подписан': 35, 'Дата Первый платеж': 36, 'Дата Второй платеж': 37,
                      'Дата Третий платеж': 38, 'Дата Выиграно': 39, 'Дата Проиграно': 40, 'Источник заявки': 41,
                      'Не взята': 42, 'Скорость взятия': 43, 'Этап отказа': 44, 'Причина отказа': 45,
-                     'Отказ подробно': 46, 'Партнер | Агент': 47, 'Проект': 48, 'Язык': 49}
+                     'Отказ подробно': 46, 'Партнер | Агент': 47, 'Проект': 48, 'Язык': 49,
+                     'Был в Договор согласован': 50, 'Дата Договор согласован': 51}
     leads_dict = leads_custom_fields_dict
 
     custom_fields_dict = {
@@ -335,6 +336,7 @@ def get_custom_fields_record(data: json) -> list:
         was_in_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='12')
         was_sent_to_a_lawyer_in_the_agreement = convert_item(lead=lead, custom_fields_dict=data, need_item='13')
         was_sent_to_the_client_in_the_agreement = convert_item(lead=lead, custom_fields_dict=data, need_item='14')
+        was_in_the_agreement_agreement = convert_item(lead=lead, custom_fields_dict=data, need_item='50')
         was_signed_in_the_treaty = convert_item(lead=lead, custom_fields_dict=data, need_item='15')
         was_in_the_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='16')
         was_in_the_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='17')
@@ -369,6 +371,8 @@ def get_custom_fields_record(data: json) -> list:
         date_contract_sent_to_lawyer = convert_time_with_time(date_contract_sent_to_lawyer)
         date_contract_sent_to_customer = convert_item(lead=lead, custom_fields_dict=data, need_item='34')
         date_contract_sent_to_customer = convert_time_with_time(date_contract_sent_to_customer)
+        date_agreement = convert_item(lead=lead, custom_fields_dict=data, need_item='51')
+        date_agreement = convert_time_with_time(date_agreement)
         date_contract_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='35')
         date_contract_signed = convert_time_with_time(date_contract_signed)
         date_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='36')
@@ -398,13 +402,13 @@ def get_custom_fields_record(data: json) -> list:
             was_in_presentation_sent, was_in_contact, was_in_a_meeting_start, was_in_a_meeting_close,
             was_held_in_meetings, was_waiting_for_prepayment, was_in_receiving_prepayment,
             was_in_details_received, was_sent_to_a_lawyer_in_the_agreement,
-            was_sent_to_the_client_in_the_agreement, was_signed_in_the_treaty,
+            was_sent_to_the_client_in_the_agreement, was_in_the_agreement_agreement, was_signed_in_the_treaty,
             was_in_the_first_payment, was_in_the_second_payment, was_in_third_payment,
             was_in_won, was_in_lost, date_new_application, date_manager_appointed,
             date_hired, date_attempt_to_contact, date_presentation_sent, date_contact_took_place,
             date_appointed, date_meeting_canceled, date_meeting_held, date_awaiting_payment,
             date_prepayment_received, date_details_received, date_contract_sent_to_lawyer,
-            date_contract_sent_to_customer, date_contract_signed, date_first_payment, date_second_payment,
+            date_contract_sent_to_customer, date_agreement, date_contract_signed, date_first_payment, date_second_payment,
             date_third_payment, date_won, date_lost, application_source, not_taken, take_speed,
             failure_stage, rejection_reason, failure_detail, partner_agent, project, language)
 

@@ -5,7 +5,7 @@ from DB_Operations import update_leads, update_custom_fields, update_utm_table, 
     delete_leads
 
 # авторизация и получение нового токена
-# update_token()
+update_token()
 
 # запрос файлов из апи
 create_api(api_name='users')

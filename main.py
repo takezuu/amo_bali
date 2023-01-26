@@ -5,7 +5,7 @@ from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, 
 
 # авторизация и получение первого токена
 # get_token()
-
+# update_token()
 # запрос файлов из апи
 create_api(api_name='users')
 create_api(api_name='pipelines')
@@ -22,8 +22,8 @@ create_dict(funcc=DataFunc.get_leads_custom_fields_dict, dict_name='leads', seco
             prefix='Dict')
 create_dict(funcc=DataFunc.get_custom_fields_dict, dict_name='leads_custom_fields',
             second_dict_name='custom_fields', prefix='Dict', extra_prefix='Dict')
-create_dict(funcc=DataFunc.get_utm_dict, dict_name='leads_custom_fields', second_dict_name='utm', prefix='Dict',
-            extra_prefix='Dict')
+# create_dict(funcc=DataFunc.get_utm_dict, dict_name='leads_custom_fields', second_dict_name='utm', prefix='Dict',
+#             extra_prefix='Dict')
 
 # запись в базу
 # подготовка словарей для первой записи leads_table
