@@ -47,6 +47,7 @@ def insert_decorator(func):
 
     return inner
 
+
 def delete_decorator(func):
     """Цикл while для функций, которые записывают данные в базу"""
 
@@ -56,6 +57,20 @@ def delete_decorator(func):
         while req:
             req = func(page_num, *args, **kwargs)
             page_num += 1
+
+    return inner
+
+
+def insert_decorator_reverse(func):
+    """Цикл while для функций, которые записывают данные в базу"""
+
+    def inner(*args, **kwargs):
+        count_files = len(os.listdir('Lead_status_changed'))
+        page_num = count_files
+        req = True
+        while req:
+            req = func(page_num, *args, **kwargs)
+            page_num -= 1
 
     return inner
 
@@ -117,9 +132,35 @@ def update_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_p
     insert_funcc(records_to_insert)
     return True
 
+@insert_decorator_reverse
+def update_insert_reverse(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, **kwargs):
+    """Обновление записей в базу"""
+    try:
+        file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data, extra_prefix=extra_prefix)
+        print(page_num, 'page')
+    except FileNotFoundError:
+        return False
+    records_to_insert = funcc(data=file_data, **kwargs)
+    insert_funcc(records_to_insert)
+    return True
+
+
+@insert_decorator_reverse
+def first_insert_reverse(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, **kwargs):
+    """Первая запись в базу"""
+    try:
+        file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data, extra_prefix=extra_prefix)
+        print(page_num, 'page')
+    except FileNotFoundError:
+        return False
+    records_to_insert = funcc(data=file_data, **kwargs)
+    insert_funcc(records_to_insert)
+    return True
+
+
 @api_decorator
 def get_deleated_lead(page_num: int, api_name, tokens):
-    deleted_leads = api_requests.api_get_deleted_leads(tokens=tokens,page_num=page_num)
+    deleted_leads = api_requests.api_get_deleted_leads(tokens=tokens, page_num=page_num)
     DataFunc.write_data(data=deleted_leads, name_of_data='Deleted_leads', page_num=page_num)
     file_data = DataFunc.read_data_file(name_of_data='Deleted_leads', page_num=page_num)
     return DataFunc.check_next_api_page(file_data=file_data)
@@ -135,6 +176,8 @@ def delete_deleted_leads(page_num: int, funcc, delete_funcc, name_of_data=None, 
     records_to_delete = funcc(data=file_data, **kwargs)
     delete_funcc(records_to_delete)
     return True
+
+
 def get_token():
     """Получает первый токен"""
     new_tokens = authorization()
