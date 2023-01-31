@@ -4,474 +4,544 @@ from pw import DataBase
 
 def db_decorator(func):
     def inner(records_to_insert):
-        if len(records_to_insert) > 0:
-            connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
-                                          host=DataBase.HOST, port=DataBase.PORT)
-            cursor = connection.cursor()
-            print('Connection success!')
-            func(records_to_insert, connection, cursor)
+        try:
+            if len(records_to_insert) > 0:
+                connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER,
+                                              password=DataBase.PASSWORD,
+                                              host=DataBase.HOST, port=DataBase.PORT)
+                cursor = connection.cursor()
+                print('Connection success!')
+                func(records_to_insert, connection, cursor)
 
-            connection.close()
-            print('Connection close!')
+                connection.close()
+                print('Connection close!')
+        except Exception as error:
+            print(f'db_decorator: {error}')
 
     return inner
 
 
 def db_create_decorator(func):
     def inner():
-        connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
-                                      host=DataBase.HOST, port=DataBase.PORT)
-        cursor = connection.cursor()
-        print('Connection success!')
-        func(connection, cursor)
+        try:
+            connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
+                                          host=DataBase.HOST, port=DataBase.PORT)
+            cursor = connection.cursor()
+            print('Connection success!')
+            func(connection, cursor)
 
-        connection.close()
-        print('Connection close!')
+            connection.close()
+            print('Connection close!')
+        except Exception as error:
+            print(f'db_create_decorator: {error}')
 
     return inner
 
 
 def db_select_decorator(func):
     def inner(*args):
-        connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
-                                      host=DataBase.HOST, port=DataBase.PORT)
-        cursor = connection.cursor()
-        print('Connection success!')
-        tokens = func(cursor, *args)
-        connection.close()
-        print('Connection close!')
-        return tokens
+        try:
+            connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
+                                          host=DataBase.HOST, port=DataBase.PORT)
+            cursor = connection.cursor()
+            print('Connection success!')
+            tokens = func(cursor, *args)
+            connection.close()
+            print('Connection close!')
+            return tokens
+        except Exception as error:
+            print(f'db_select_decorator: {error}')
 
     return inner
 
 
 def db_delete_decorator(func):
     def inner(name_of_table):
-        connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
-                                      host=DataBase.HOST, port=DataBase.PORT)
-        cursor = connection.cursor()
-        print('Connection success!')
-        func(connection, cursor, name_of_table)
+        try:
+            connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
+                                          host=DataBase.HOST, port=DataBase.PORT)
+            cursor = connection.cursor()
+            print('Connection success!')
+            func(connection, cursor, name_of_table)
 
-        connection.close()
-        print('Connection close!')
+            connection.close()
+            print('Connection close!')
+        except Exception as error:
+            print(f'db_delete_decorator: {error}')
 
     return inner
+
 
 def db_delete_decorator_new(func):
     def inner(*args):
-        connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
-                                      host=DataBase.HOST, port=DataBase.PORT)
-        cursor = connection.cursor()
-        print('Connection success!')
-        func(connection, cursor, *args)
+        try:
+            connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
+                                          host=DataBase.HOST, port=DataBase.PORT)
+            cursor = connection.cursor()
+            print('Connection success!')
+            func(connection, cursor, *args)
 
-        connection.close()
-        print('Connection close!')
+            connection.close()
+            print('Connection close!')
+        except Exception as error:
+            print(f'db_delete_decorator_new: {error}')
 
     return inner
-
 
 
 @db_create_decorator
 def create_table_leads_table(connection, cursor) -> None:
     """Cоздает таблицу сделок"""
-    create_query = """CREATE TABLE leads_table(
-    ID INT PRIMARY KEY NOT NULL ,
-    Название TEXT,
-    Бюджет INT,
-    Состояние TEXT,
-    Ответственный TEXT,
-    Группа TEXT,
-    Воронка TEXT,
-    Этап_воронки TEXT,
-    Дата_перехода_на_этап DATE,
-    Дата_создания DATE,
-    Дата_изменения DATE,
-    Дата_закрытия DATE,
-    Ближайшая_задача DATE,
-    Наличие_задачи TEXT,
-    Просрочена_задача TEXT);"""
-    cursor.execute(create_query)
-    connection.commit()
-    print('CREATE TABLE LEADS TABLE')
+    try:
+        create_query = """CREATE TABLE leads_table(
+        ID INT PRIMARY KEY NOT NULL ,
+        Название TEXT,
+        Бюджет INT,
+        Состояние TEXT,
+        Ответственный TEXT,
+        Группа TEXT,
+        Воронка TEXT,
+        Этап_воронки TEXT,
+        Дата_перехода_на_этап DATE,
+        Дата_создания DATE,
+        Дата_изменения DATE,
+        Дата_закрытия DATE,
+        Ближайшая_задача DATE,
+        Наличие_задачи TEXT,
+        Просрочена_задача TEXT);"""
+        cursor.execute(create_query)
+        connection.commit()
+        print('CREATE TABLE LEADS TABLE')
+    except Exception as error:
+        print(f'create_table_leads_table: {error}')
 
 
 @db_create_decorator
 def create_table_custom_fields_table(connection, cursor) -> None:
     """Cоздает таблицу кастомных полей"""
-    create_query = """CREATE TABLE custom_fields_table(
-    ID INT PRIMARY KEY NOT NULL ,
-    Был_в_Новая_заявка TEXT,
-    Был_в_Менеджер_назначен TEXT,
-    Был_в_Взята_в_работу TEXT,
-    Был_в_Попытка_связаться TEXT,
-    Был_в_Презентация_отправлена TEXT,
-    Был_в_Контакт_состоялся TEXT,
-    Был_в_Встреча_назначена TEXT,
-    Был_в_Встреча_отменена TEXT,
-    Был_в_Встреча_проведена TEXT,
-    Был_в_Ожидаем_предоплату TEXT,
-    Был_в_Получена_предоплата TEXT,
-    Был_в_Реквизиты_получены TEXT,
-    Был_в_Договор_отправлен_юристу TEXT,
-    Был_в_Договор_отправлен_клиенту TEXT,
-    Был_в_Договор_согласован TEXT,
-    Был_в_Договор_подписан TEXT,
-    Был_в_Первый_платеж TEXT,
-    Был_в_Второй_платеж TEXT,
-    Был_в_Третий_платеж TEXT,
-    Был_в_Выиграно TEXT,
-    Был_в_Проиграно TEXT,
-    Дата_Новая_заявка DATE,
-    Дата_Менеджер_назначен DATE,
-    Дата_Взята_в_работу DATE,
-    Дата_Попытка_связаться DATE,
-    Дата_Презентация_отправлена DATE,
-    Дата_Контакт_состоялся DATE,
-    Дата_Встреча_назначена DATE,
-    Дата_Встреча_отменена DATE,
-    Дата_Встреча_проведена DATE,
-    Дата_Ожидаем_предоплату DATE,
-    Дата_Получена_предоплата DATE,
-    Дата_Реквизиты_получены DATE,
-    Дата_Договор_отправлен_юристу DATE,
-    Дата_Договор_отправлен_клиенту DATE,
-    Дата_Договор_согласован DATE,
-    Дата_Договор_подписан DATE,
-    Дата_Первый_платеж DATE,
-    Дата_Второй_платеж DATE,
-    Дата_Третий_платеж DATE,
-    Дата_Выиграно DATE,
-    Дата_Проиграно DATE,
-    Источник_заявки TEXT,
-    Не_взята TEXT,
-    Скорость_взятия DATE,
-    Этап_отказа TEXT,
-    Причина_отказа TEXT,
-    Отказ_подробно TEXT,
-    Партнер_Агент TEXT,
-    Проект TEXT,
-    Язык TEXT);"""
-    cursor.execute(create_query)
-    connection.commit()
-    print('CREATE TABLE CUSTOM FIELDS')
+    try:
+        create_query = """CREATE TABLE custom_fields_table(
+        ID INT PRIMARY KEY NOT NULL ,
+        Был_в_Новая_заявка TEXT,
+        Был_в_Менеджер_назначен TEXT,
+        Был_в_Взята_в_работу TEXT,
+        Был_в_Попытка_связаться TEXT,
+        Был_в_Презентация_отправлена TEXT,
+        Был_в_Контакт_состоялся TEXT,
+        Был_в_Встреча_назначена TEXT,
+        Был_в_Встреча_отменена TEXT,
+        Был_в_Встреча_проведена TEXT,
+        Был_в_Ожидаем_предоплату TEXT,
+        Был_в_Получена_предоплата TEXT,
+        Был_в_Реквизиты_получены TEXT,
+        Был_в_Договор_отправлен_юристу TEXT,
+        Был_в_Договор_отправлен_клиенту TEXT,
+        Был_в_Договор_подписан TEXT,
+        Был_в_Первый_платеж TEXT,
+        Был_в_Второй_платеж TEXT,
+        Был_в_Третий_платеж TEXT,
+        Был_в_Выиграно TEXT,
+        Был_в_Проиграно TEXT,
+        Дата_Новая_заявка DATE,
+        Дата_Менеджер_назначен DATE,
+        Дата_Взята_в_работу DATE,
+        Дата_Попытка_связаться DATE,
+        Дата_Презентация_отправлена DATE,
+        Дата_Контакт_состоялся DATE,
+        Дата_Встреча_назначена DATE,
+        Дата_Встреча_отменена DATE,
+        Дата_Встреча_проведена DATE,
+        Дата_Ожидаем_предоплату DATE,
+        Дата_Получена_предоплата DATE,
+        Дата_Реквизиты_получены DATE,
+        Дата_Договор_отправлен_юристу DATE,
+        Дата_Договор_отправлен_клиенту DATE,
+        Дата_Договор_подписан DATE,
+        Дата_Первый_платеж DATE,
+        Дата_Второй_платеж DATE,
+        Дата_Третий_платеж DATE,
+        Дата_Выиграно DATE,
+        Дата_Проиграно DATE,
+        Источник_заявки TEXT,
+        Не_взята TEXT,
+        Скорость_взятия DATE,
+        Этап_отказа TEXT,
+        Причина_отказа TEXT,
+        Отказ_подробно TEXT,
+        Партнер_Агент TEXT,
+        Проект TEXT,
+        Язык TEXT);"""
+        cursor.execute(create_query)
+        connection.commit()
+        print('CREATE TABLE CUSTOM FIELDS')
+    except Exception as error:
+        print(f'create_table_custom_fields_table: {error}')
 
 
 @db_create_decorator
 def create_table_utm(connection, cursor) -> None:
     """Cоздает таблицу utm меток"""
-    create_query = """CREATE TABLE utm_table(
-    ID INT PRIMARY KEY NOT NULL,
-    fbclid TEXT,
-    yclid TEXT,
-    gclid TEXT,
-    gclientid TEXT,
-    utm_from TEXT,
-    utm_source TEXT,
-    utm_medium TEXT,
-    utm_campaign TEXT,
-    utm_term TEXT,
-    utm_content TEXT,
-    utm_referrer TEXT,
-    ym_uid TEXT,
-    ym_counter TEXT,
-    roistat TEXT);"""
-    cursor.execute(create_query)
-    connection.commit()
-    print('CREATE TABLE UTM')
+    try:
+        create_query = """CREATE TABLE utm_table(
+        ID INT PRIMARY KEY NOT NULL,
+        fbclid TEXT,
+        yclid TEXT,
+        gclid TEXT,
+        gclientid TEXT,
+        utm_from TEXT,
+        utm_source TEXT,
+        utm_medium TEXT,
+        utm_campaign TEXT,
+        utm_term TEXT,
+        utm_content TEXT,
+        utm_referrer TEXT,
+        ym_uid TEXT,
+        ym_counter TEXT,
+        roistat TEXT);"""
+        cursor.execute(create_query)
+        connection.commit()
+        print('CREATE TABLE UTM')
+    except Exception as error:
+        print(f'create_table_utm: {error}')
 
 
 @db_create_decorator
 def create_pipeline_table(connection, cursor) -> None:
     """Cоздает таблицу utm меток"""
-    create_query = """CREATE TABLE pipeline_table(
-    Дата DATE PRIMARY KEY NOT NULL,
-    Неразобранное INT,
-    Получена_новая_заявка INT,
-    Заявка_взята_в_работу INT,
-    Клиент_квалифицирован INT,
-    Демонстрация_назначена INT,
-    Демонстрация_проведена INT,
-    КП_отправлено INT,
-    Оплата_согласована INT,
-    Договор_отправлен INT,
-    Счет_выставлен INT,
-    Внесена_предоплата INT,
-    Успешно_реализовано INT,
-    Закрыто_и_не_реализовано INT);"""
-    cursor.execute(create_query)
-    connection.commit()
-    print('CREATE TABLE PIPELINE')
+    try:
+        create_query = """CREATE TABLE pipeline_table(
+        Дата DATE PRIMARY KEY NOT NULL,
+        Неразобранное INT,
+        Получена_новая_заявка INT,
+        Заявка_взята_в_работу INT,
+        Клиент_квалифицирован INT,
+        Демонстрация_назначена INT,
+        Демонстрация_проведена INT,
+        КП_отправлено INT,
+        Оплата_согласована INT,
+        Договор_отправлен INT,
+        Счет_выставлен INT,
+        Внесена_предоплата INT,
+        Успешно_реализовано INT,
+        Закрыто_и_не_реализовано INT);"""
+        cursor.execute(create_query)
+        connection.commit()
+        print('CREATE TABLE PIPELINE')
+    except Exception as error:
+        print(f'create_pipeline_table: {error}')
 
 
 @db_create_decorator
 def create_table_tk(connection, cursor) -> None:
     """Cоздает таблицу тк"""
-    create_query = """CREATE TABLE tk_table(
-    ID INT PRIMARY KEY NOT NULL,
-    access_token TEXT, 
-    refresh_token TEXT);"""
-    cursor.execute(create_query)
-    connection.commit()
-    print('CREATE TABLE TK')
+    try:
+        create_query = """CREATE TABLE tk_table(
+        ID INT PRIMARY KEY NOT NULL,
+        access_token TEXT, 
+        refresh_token TEXT);"""
+        cursor.execute(create_query)
+        connection.commit()
+        print('CREATE TABLE TK')
+    except Exception as error:
+        print(f'create_table_tk: {error}')
 
 
 @db_decorator
 def insert_leads(records_to_insert: list, connection, cursor) -> None:
     """Записывает сделки в базу"""
-    print(len(records_to_insert))
-    insert_query = """INSERT INTO leads_table (
-            ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,  Дата_перехода_на_этап, 
-            Дата_создания, Дата_изменения, Дата_закрытия,
-            Ближайшая_задача, Наличие_задачи, Просрочена_задача) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-    cursor.executemany(insert_query, records_to_insert)
-    connection.commit()
+    try:
+        print(len(records_to_insert))
+        insert_query = """INSERT INTO leads_table (
+                ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,  Дата_перехода_на_этап, 
+                Дата_создания, Дата_изменения, Дата_закрытия,
+                Ближайшая_задача, Наличие_задачи, Просрочена_задача) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'insert_leads: {error}')
 
 
 @db_decorator
 def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
     """Записывает дополнительные поля в базу"""
-    print(len(records_to_insert))
-    insert_query = """INSERT INTO custom_fields_table (
-            ID, Был_в_Новая_заявка, Был_в_Менеджер_назначен, Был_в_Взята_в_работу, Был_в_Попытка_связаться, 
-            Был_в_Презентация_отправлена, Был_в_Контакт_состоялся, Был_в_Встреча_назначена, 
-            Был_в_Встреча_отменена, Был_в_Встреча_проведена, Был_в_Ожидаем_предоплату, 
-            Был_в_Получена_предоплата, Был_в_Реквизиты_получены, Был_в_Договор_отправлен_юристу, 
-            Был_в_Договор_отправлен_клиенту, Был_в_Договор_согласован, Был_в_Договор_подписан, Был_в_Первый_платеж, 
-            Был_в_Второй_платеж, Был_в_Третий_платеж, Был_в_Выиграно, Был_в_Проиграно, 
-            Дата_Новая_заявка, Дата_Менеджер_назначен, Дата_Взята_в_работу, Дата_Попытка_связаться, 
-            Дата_Презентация_отправлена, Дата_Контакт_состоялся, Дата_Встреча_назначена, Дата_Встреча_отменена, 
-            Дата_Встреча_проведена, Дата_Ожидаем_предоплату, Дата_Получена_предоплата, Дата_Реквизиты_получены, 
-            Дата_Договор_отправлен_юристу, Дата_Договор_отправлен_клиенту, Дата_Договор_согласован, 
-            Дата_Договор_подписан, Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, 
-            Дата_Выиграно, Дата_Проиграно, Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, 
-            Причина_отказа, Отказ_подробно, Партнер_Агент, Проект, Язык) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-    cursor.executemany(insert_query, records_to_insert)
-    connection.commit()
+    try:
+        print(len(records_to_insert))
+        insert_query = """INSERT INTO custom_fields_table (
+                ID, Был_в_Новая_заявка, Был_в_Менеджер_назначен, Был_в_Взята_в_работу, Был_в_Попытка_связаться, 
+                Был_в_Презентация_отправлена, Был_в_Контакт_состоялся, Был_в_Встреча_назначена, 
+                Был_в_Встреча_отменена, Был_в_Встреча_проведена, Был_в_Ожидаем_предоплату, 
+                Был_в_Получена_предоплата, Был_в_Реквизиты_получены, Был_в_Договор_отправлен_юристу, 
+                Был_в_Договор_отправлен_клиенту, Был_в_Договор_подписан, Был_в_Первый_платеж, 
+                Был_в_Второй_платеж, Был_в_Третий_платеж, Был_в_Выиграно, Был_в_Проиграно, 
+                Дата_Новая_заявка, Дата_Менеджер_назначен, Дата_Взята_в_работу, Дата_Попытка_связаться, 
+                Дата_Презентация_отправлена, Дата_Контакт_состоялся, Дата_Встреча_назначена, Дата_Встреча_отменена, 
+                Дата_Встреча_проведена, Дата_Ожидаем_предоплату, Дата_Получена_предоплата, Дата_Реквизиты_получены, 
+                Дата_Договор_отправлен_юристу, Дата_Договор_отправлен_клиенту, Дата_Договор_подписан, 
+                Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
+                Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
+                Партнер_Агент, Проект, Язык) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'insert_custom_fields: {error}')
 
 
 @db_decorator
 def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
     """Записывает utm поля в базу"""
-    print(len(records_to_insert))
-    insert_query = """INSERT INTO utm_table (
-            ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
-            utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
-    cursor.executemany(insert_query, records_to_insert)
-    connection.commit()
+    try:
+        print(len(records_to_insert))
+        insert_query = """INSERT INTO utm_table (
+                ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
+                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'insert_utm_table: {error}')
 
 
 @db_decorator
 def insert_tk_table(records_to_insert, connection, cursor) -> None:
     """Обновляет и записывает токены в базу"""
-    insert_query = f"""INSERT INTO tk_table (
-    ID, access_token, refresh_token)
-    VALUES (1, '{records_to_insert["access_token"]}', '{records_to_insert["refresh_token"]}')
-    ON CONFLICT (id) DO UPDATE SET
-    access_token = EXCLUDED.access_token,
-    refresh_token = EXCLUDED.refresh_token"""
-    cursor.execute(insert_query)
-    connection.commit()
+    try:
+        insert_query = f"""INSERT INTO tk_table (
+        ID, access_token, refresh_token)
+        VALUES (1, '{records_to_insert["access_token"]}', '{records_to_insert["refresh_token"]}')
+        ON CONFLICT (id) DO UPDATE SET
+        access_token = EXCLUDED.access_token,
+        refresh_token = EXCLUDED.refresh_token"""
+        cursor.execute(insert_query)
+        connection.commit()
+    except Exception as error:
+        print(f'insert_tk_table: {error}')
 
 
 @db_decorator
 def insert_pipeline_table(record_to_insert: list, connection, cursor) -> None:
     """Записывает сделки в базу"""
-    print(len(record_to_insert))
-    insert_query = """INSERT INTO pipeline_table (
-            Дата, Неразобранное, Получена_новая_заявка, Заявка_взята_в_работу, Клиент_квалифицирован, 
-            Демонстрация_назначена, Демонстрация_проведена, КП_отправлено, Оплата_согласована,
-            Договор_отправлен, Счет_выставлен, Внесена_предоплата, Успешно_реализовано, Закрыто_и_не_реализовано) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            ON CONFLICT (Дата) DO UPDATE SET
-            Дата = EXCLUDED.Дата,
-            Неразобранное = EXCLUDED.Неразобранное,
-            Получена_новая_заявка = EXCLUDED.Получена_новая_заявка,
-            Заявка_взята_в_работу = EXCLUDED.Заявка_взята_в_работу,
-            Клиент_квалифицирован = EXCLUDED.Клиент_квалифицирован, 
-            Демонстрация_назначена = EXCLUDED.Демонстрация_назначена,
-            Демонстрация_проведена = EXCLUDED.Демонстрация_проведена,
-            КП_отправлено = EXCLUDED.КП_отправлено,
-            Оплата_согласована = EXCLUDED.Оплата_согласована,
-            Договор_отправлен = EXCLUDED.Договор_отправлен,
-            Счет_выставлен = EXCLUDED.Счет_выставлен,
-            Внесена_предоплата = EXCLUDED.Внесена_предоплата,
-            Успешно_реализовано = EXCLUDED.Успешно_реализовано,
-            Закрыто_и_не_реализовано = EXCLUDED.Закрыто_и_не_реализовано"""
-    cursor.execute(insert_query, record_to_insert)
-    connection.commit()
+    try:
+        print(len(record_to_insert))
+        insert_query = """INSERT INTO pipeline_table (
+                Дата, Неразобранное, Получена_новая_заявка, Заявка_взята_в_работу, Клиент_квалифицирован, 
+                Демонстрация_назначена, Демонстрация_проведена, КП_отправлено, Оплата_согласована,
+                Договор_отправлен, Счет_выставлен, Внесена_предоплата, Успешно_реализовано, Закрыто_и_не_реализовано) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (Дата) DO UPDATE SET
+                Дата = EXCLUDED.Дата,
+                Неразобранное = EXCLUDED.Неразобранное,
+                Получена_новая_заявка = EXCLUDED.Получена_новая_заявка,
+                Заявка_взята_в_работу = EXCLUDED.Заявка_взята_в_работу,
+                Клиент_квалифицирован = EXCLUDED.Клиент_квалифицирован, 
+                Демонстрация_назначена = EXCLUDED.Демонстрация_назначена,
+                Демонстрация_проведена = EXCLUDED.Демонстрация_проведена,
+                КП_отправлено = EXCLUDED.КП_отправлено,
+                Оплата_согласована = EXCLUDED.Оплата_согласована,
+                Договор_отправлен = EXCLUDED.Договор_отправлен,
+                Счет_выставлен = EXCLUDED.Счет_выставлен,
+                Внесена_предоплата = EXCLUDED.Внесена_предоплата,
+                Успешно_реализовано = EXCLUDED.Успешно_реализовано,
+                Закрыто_и_не_реализовано = EXCLUDED.Закрыто_и_не_реализовано"""
+        cursor.execute(insert_query, record_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'insert_pipeline_table: {error}')
 
 
 @db_decorator
 def update_leads(records_to_insert: list, connection, cursor) -> None:
     """Обновляет сделки в базе"""
-    print(len(records_to_insert))
-    update_query = """INSERT INTO leads_table (
-            ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,
-            Дата_создания, Дата_изменения, Дата_закрытия,
-            Ближайшая_задача, Наличие_задачи, Просрочена_задача) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            ON CONFLICT (id) DO UPDATE SET
-            Название = EXCLUDED.Название, Бюджет = EXCLUDED.Бюджет, Состояние = EXCLUDED.Состояние, 
-            Ответственный = EXCLUDED.Ответственный, Группа = EXCLUDED.Группа, Воронка = EXCLUDED.Воронка, 
-            Этап_воронки = EXCLUDED.Этап_воронки,
-            Дата_создания = EXCLUDED.Дата_создания, Дата_изменения = EXCLUDED.Дата_изменения, 
-            Дата_закрытия = EXCLUDED.Дата_закрытия, Ближайшая_задача = EXCLUDED.Ближайшая_задача, 
-            Наличие_задачи = EXCLUDED.Наличие_задачи, Просрочена_задача = EXCLUDED.Просрочена_задача"""
-    cursor.executemany(update_query, records_to_insert)
-    connection.commit()
+    try:
+        print(len(records_to_insert))
+        update_query = """INSERT INTO leads_table (
+                ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,
+                Дата_создания, Дата_изменения, Дата_закрытия,
+                Ближайшая_задача, Наличие_задачи, Просрочена_задача) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (id) DO UPDATE SET
+                Название = EXCLUDED.Название, Бюджет = EXCLUDED.Бюджет, Состояние = EXCLUDED.Состояние, 
+                Ответственный = EXCLUDED.Ответственный, Группа = EXCLUDED.Группа, Воронка = EXCLUDED.Воронка, 
+                Этап_воронки = EXCLUDED.Этап_воронки,
+                Дата_создания = EXCLUDED.Дата_создания, Дата_изменения = EXCLUDED.Дата_изменения, 
+                Дата_закрытия = EXCLUDED.Дата_закрытия, Ближайшая_задача = EXCLUDED.Ближайшая_задача, 
+                Наличие_задачи = EXCLUDED.Наличие_задачи, Просрочена_задача = EXCLUDED.Просрочена_задача"""
+        cursor.executemany(update_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'update_leads: {error}')
 
 
 @db_decorator
 def update_leads_pipelines_status_date(records_to_insert: list, connection, cursor) -> None:
     """Записывает дату перехода в этап воронки"""
-    print(len(records_to_insert))
-    insert_query = """UPDATE leads_table SET
-            Дата_перехода_на_этап = %s WHERE ID = %s"""
+    try:
+        print(len(records_to_insert))
+        insert_query = """UPDATE leads_table SET
+                Дата_перехода_на_этап = %s WHERE ID = %s"""
 
-    cursor.executemany(insert_query, records_to_insert)
-    connection.commit()
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'update_leads_pipelines_status_date: {error}')
 
 
 @db_decorator
 def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
     """Обновляет дополнительные поля в базе"""
-    print(len(records_to_insert))
-    update_query = """INSERT INTO custom_fields_table (
-            ID, Был_в_Новая_заявка, Был_в_Менеджер_назначен, Был_в_Взята_в_работу, Был_в_Попытка_связаться, 
-            Был_в_Презентация_отправлена, Был_в_Контакт_состоялся, Был_в_Встреча_назначена, 
-            Был_в_Встреча_отменена, Был_в_Встреча_проведена, Был_в_Ожидаем_предоплату, 
-            Был_в_Получена_предоплата, Был_в_Реквизиты_получены, Был_в_Договор_отправлен_юристу, 
-            Был_в_Договор_отправлен_клиенту, Был_в_Договор_согласован, Был_в_Договор_подписан, Был_в_Первый_платеж, 
-            Был_в_Второй_платеж, Был_в_Третий_платеж, Был_в_Выиграно, Был_в_Проиграно, 
-            Дата_Новая_заявка, Дата_Менеджер_назначен, Дата_Взята_в_работу, Дата_Попытка_связаться, 
-            Дата_Презентация_отправлена, Дата_Контакт_состоялся, Дата_Встреча_назначена, Дата_Встреча_отменена, 
-            Дата_Встреча_проведена, Дата_Ожидаем_предоплату, Дата_Получена_предоплата, Дата_Реквизиты_получены, 
-            Дата_Договор_отправлен_юристу, Дата_Договор_отправлен_клиенту, Дата_Договор_согласован, Дата_Договор_подписан, 
-            Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
-            Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
-            Партнер_Агент, Проект, Язык) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-            %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            ON CONFLICT (id) DO UPDATE SET
-            Был_в_Новая_заявка = EXCLUDED.Был_в_Новая_заявка,
-            Был_в_Менеджер_назначен = EXCLUDED.Был_в_Менеджер_назначен,
-            Был_в_Взята_в_работу = EXCLUDED.Был_в_Взята_в_работу,
-            Был_в_Попытка_связаться = EXCLUDED.Был_в_Попытка_связаться,
-            Был_в_Презентация_отправлена = EXCLUDED.Был_в_Презентация_отправлена,
-            Был_в_Контакт_состоялся = EXCLUDED.Был_в_Контакт_состоялся,
-            Был_в_Встреча_назначена = EXCLUDED.Был_в_Встреча_назначена,
-            Был_в_Встреча_отменена = EXCLUDED.Был_в_Встреча_отменена,
-            Был_в_Встреча_проведена = EXCLUDED.Был_в_Встреча_проведена,
-            Был_в_Ожидаем_предоплату = EXCLUDED.Был_в_Ожидаем_предоплату,
-            Был_в_Получена_предоплата = EXCLUDED.Был_в_Получена_предоплата,
-            Был_в_Реквизиты_получены = EXCLUDED.Был_в_Реквизиты_получены,
-            Был_в_Договор_отправлен_юристу = EXCLUDED.Был_в_Договор_отправлен_юристу,
-            Был_в_Договор_отправлен_клиенту = EXCLUDED.Был_в_Договор_отправлен_клиенту,
-            Был_в_Договор_согласован = EXCLUDED.Был_в_Договор_согласован,
-            Был_в_Договор_подписан = EXCLUDED.Был_в_Договор_подписан,
-            Был_в_Первый_платеж = EXCLUDED.Был_в_Первый_платеж,
-            Был_в_Второй_платеж = EXCLUDED.Был_в_Второй_платеж,
-            Был_в_Третий_платеж = EXCLUDED.Был_в_Третий_платеж,
-            Был_в_Выиграно = EXCLUDED.Был_в_Выиграно,
-            Был_в_Проиграно = EXCLUDED.Был_в_Проиграно,
-            Дата_Новая_заявка = EXCLUDED.Дата_Новая_заявка,
-            Дата_Менеджер_назначен = EXCLUDED.Дата_Менеджер_назначен,
-            Дата_Взята_в_работу = EXCLUDED.Дата_Взята_в_работу,
-            Дата_Попытка_связаться = EXCLUDED.Дата_Попытка_связаться,
-            Дата_Презентация_отправлена = EXCLUDED.Дата_Презентация_отправлена,
-            Дата_Контакт_состоялся = EXCLUDED.Дата_Контакт_состоялся,
-            Дата_Встреча_назначена = EXCLUDED.Дата_Встреча_назначена,
-            Дата_Встреча_отменена = EXCLUDED.Дата_Встреча_отменена,
-            Дата_Встреча_проведена = EXCLUDED.Дата_Встреча_проведена,
-            Дата_Ожидаем_предоплату = EXCLUDED.Дата_Ожидаем_предоплату,
-            Дата_Получена_предоплата = EXCLUDED.Дата_Получена_предоплата,
-            Дата_Реквизиты_получены = EXCLUDED.Дата_Реквизиты_получены,
-            Дата_Договор_отправлен_юристу = EXCLUDED.Дата_Договор_отправлен_юристу,
-            Дата_Договор_отправлен_клиенту = EXCLUDED.Дата_Договор_отправлен_клиенту,
-            Дата_Договор_согласован = EXCLUDED.Дата_Договор_согласован,
-            Дата_Договор_подписан = EXCLUDED.Дата_Договор_подписан,
-            Дата_Первый_платеж = EXCLUDED.Дата_Первый_платеж,
-            Дата_Второй_платеж = EXCLUDED.Дата_Второй_платеж,
-            Дата_Третий_платеж = EXCLUDED.Дата_Третий_платеж,
-            Дата_Выиграно = EXCLUDED.Дата_Выиграно,
-            Дата_Проиграно = EXCLUDED.Дата_Проиграно,
-            Источник_заявки = EXCLUDED.Источник_заявки,
-            Не_взята = EXCLUDED.Не_взята,
-            Скорость_взятия = EXCLUDED.Скорость_взятия,
-            Этап_отказа = EXCLUDED.Этап_отказа,
-            Причина_отказа = EXCLUDED.Причина_отказа,
-            Отказ_подробно = EXCLUDED.Отказ_подробно,
-            Партнер_Агент = EXCLUDED.Партнер_Агент,
-            Проект = EXCLUDED.Проект,
-            Язык = EXCLUDED.Язык
-            """
-    cursor.executemany(update_query, records_to_insert)
-    connection.commit()
+    try:
+        print(len(records_to_insert))
+        update_query = """INSERT INTO custom_fields_table (
+                ID, Был_в_Новая_заявка, Был_в_Менеджер_назначен, Был_в_Взята_в_работу, Был_в_Попытка_связаться, 
+                Был_в_Презентация_отправлена, Был_в_Контакт_состоялся, Был_в_Встреча_назначена, 
+                Был_в_Встреча_отменена, Был_в_Встреча_проведена, Был_в_Ожидаем_предоплату, 
+                Был_в_Получена_предоплата, Был_в_Реквизиты_получены, Был_в_Договор_отправлен_юристу, 
+                Был_в_Договор_отправлен_клиенту, Был_в_Договор_подписан, Был_в_Первый_платеж, 
+                Был_в_Второй_платеж, Был_в_Третий_платеж, Был_в_Выиграно, Был_в_Проиграно, 
+                Дата_Новая_заявка, Дата_Менеджер_назначен, Дата_Взята_в_работу, Дата_Попытка_связаться, 
+                Дата_Презентация_отправлена, Дата_Контакт_состоялся, Дата_Встреча_назначена, Дата_Встреча_отменена, 
+                Дата_Встреча_проведена, Дата_Ожидаем_предоплату, Дата_Получена_предоплата, Дата_Реквизиты_получены, 
+                Дата_Договор_отправлен_юристу, Дата_Договор_отправлен_клиенту, Дата_Договор_подписан, 
+                Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
+                Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
+                Партнер_Агент, Проект, Язык) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (id) DO UPDATE SET
+                Был_в_Новая_заявка = EXCLUDED.Был_в_Новая_заявка,
+                Был_в_Менеджер_назначен = EXCLUDED.Был_в_Менеджер_назначен,
+                Был_в_Взята_в_работу = EXCLUDED.Был_в_Взята_в_работу,
+                Был_в_Попытка_связаться = EXCLUDED.Был_в_Попытка_связаться,
+                Был_в_Презентация_отправлена = EXCLUDED.Был_в_Презентация_отправлена,
+                Был_в_Контакт_состоялся = EXCLUDED.Был_в_Контакт_состоялся,
+                Был_в_Встреча_назначена = EXCLUDED.Был_в_Встреча_назначена,
+                Был_в_Встреча_отменена = EXCLUDED.Был_в_Встреча_отменена,
+                Был_в_Встреча_проведена = EXCLUDED.Был_в_Встреча_проведена,
+                Был_в_Ожидаем_предоплату = EXCLUDED.Был_в_Ожидаем_предоплату,
+                Был_в_Получена_предоплата = EXCLUDED.Был_в_Получена_предоплата,
+                Был_в_Реквизиты_получены = EXCLUDED.Был_в_Реквизиты_получены,
+                Был_в_Договор_отправлен_юристу = EXCLUDED.Был_в_Договор_отправлен_юристу,
+                Был_в_Договор_отправлен_клиенту = EXCLUDED.Был_в_Договор_отправлен_клиенту,
+                Был_в_Договор_подписан = EXCLUDED.Был_в_Договор_подписан,
+                Был_в_Первый_платеж = EXCLUDED.Был_в_Первый_платеж,
+                Был_в_Второй_платеж = EXCLUDED.Был_в_Второй_платеж,
+                Был_в_Третий_платеж = EXCLUDED.Был_в_Третий_платеж,
+                Был_в_Выиграно = EXCLUDED.Был_в_Выиграно,
+                Был_в_Проиграно = EXCLUDED.Был_в_Проиграно,
+                Дата_Новая_заявка = EXCLUDED.Дата_Новая_заявка,
+                Дата_Менеджер_назначен = EXCLUDED.Дата_Менеджер_назначен,
+                Дата_Взята_в_работу = EXCLUDED.Дата_Взята_в_работу,
+                Дата_Попытка_связаться = EXCLUDED.Дата_Попытка_связаться,
+                Дата_Презентация_отправлена = EXCLUDED.Дата_Презентация_отправлена,
+                Дата_Контакт_состоялся = EXCLUDED.Дата_Контакт_состоялся,
+                Дата_Встреча_назначена = EXCLUDED.Дата_Встреча_назначена,
+                Дата_Встреча_отменена = EXCLUDED.Дата_Встреча_отменена,
+                Дата_Встреча_проведена = EXCLUDED.Дата_Встреча_проведена,
+                Дата_Ожидаем_предоплату = EXCLUDED.Дата_Ожидаем_предоплату,
+                Дата_Получена_предоплата = EXCLUDED.Дата_Получена_предоплата,
+                Дата_Реквизиты_получены = EXCLUDED.Дата_Реквизиты_получены,
+                Дата_Договор_отправлен_юристу = EXCLUDED.Дата_Договор_отправлен_юристу,
+                Дата_Договор_отправлен_клиенту = EXCLUDED.Дата_Договор_отправлен_клиенту,
+                Дата_Договор_подписан = EXCLUDED.Дата_Договор_подписан,
+                Дата_Первый_платеж = EXCLUDED.Дата_Первый_платеж,
+                Дата_Второй_платеж = EXCLUDED.Дата_Второй_платеж,
+                Дата_Третий_платеж = EXCLUDED.Дата_Третий_платеж,
+                Дата_Выиграно = EXCLUDED.Дата_Выиграно,
+                Дата_Проиграно = EXCLUDED.Дата_Проиграно,
+                Источник_заявки = EXCLUDED.Источник_заявки,
+                Не_взята = EXCLUDED.Не_взята,
+                Скорость_взятия = EXCLUDED.Скорость_взятия,
+                Этап_отказа = EXCLUDED.Этап_отказа,
+                Причина_отказа = EXCLUDED.Причина_отказа,
+                Отказ_подробно = EXCLUDED.Отказ_подробно,
+                Партнер_Агент = EXCLUDED.Партнер_Агент,
+                Проект = EXCLUDED.Проект,
+                Язык = EXCLUDED.Язык
+                """
+        cursor.executemany(update_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'update_custom_fields: {error}')
 
 
 @db_decorator
 def update_utm_table(records_to_insert: list, connection, cursor) -> None:
     """Обновляет utm в базе"""
-    print(len(records_to_insert))
-    update_query = """INSERT INTO utm_table (
-            ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
-            utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
-            ON CONFLICT (id) DO UPDATE SET
-            fbclid = EXCLUDED.fbclid, yclid = EXCLUDED.yclid, gclid = EXCLUDED.gclid, gclientid = EXCLUDED.gclientid, 
-            utm_from = EXCLUDED.utm_from, utm_source = EXCLUDED.utm_source, utm_medium = EXCLUDED.utm_medium,
-            utm_campaign = EXCLUDED.utm_campaign, utm_term = EXCLUDED.utm_term, utm_content = EXCLUDED.utm_content, 
-            utm_referrer = EXCLUDED.utm_referrer, ym_uid = EXCLUDED.ym_uid, ym_counter = EXCLUDED.ym_counter, 
-            roistat = EXCLUDED.roistat"""
-    cursor.executemany(update_query, records_to_insert)
-    connection.commit()
+    try:
+        print(len(records_to_insert))
+        update_query = """INSERT INTO utm_table (
+                ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
+                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (id) DO UPDATE SET
+                fbclid = EXCLUDED.fbclid, yclid = EXCLUDED.yclid, gclid = EXCLUDED.gclid, gclientid = EXCLUDED.gclientid, 
+                utm_from = EXCLUDED.utm_from, utm_source = EXCLUDED.utm_source, utm_medium = EXCLUDED.utm_medium,
+                utm_campaign = EXCLUDED.utm_campaign, utm_term = EXCLUDED.utm_term, utm_content = EXCLUDED.utm_content, 
+                utm_referrer = EXCLUDED.utm_referrer, ym_uid = EXCLUDED.ym_uid, ym_counter = EXCLUDED.ym_counter, 
+                roistat = EXCLUDED.roistat"""
+        cursor.executemany(update_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        print(f'update_utm_table: {error}')
 
 
 @db_select_decorator
 def read_tokens(cursor) -> tuple:
     """Читает токены из базы"""
-    select_query = """SELECT access_token, refresh_token FROM tk_table"""
-    cursor.execute(select_query)
-    return cursor.fetchone()
+    try:
+        select_query = """SELECT access_token, refresh_token FROM tk_table"""
+        cursor.execute(select_query)
+        return cursor.fetchone()
+    except Exception as error:
+        print(f'read_tokens: {error}')
 
 
 @db_select_decorator
 def select_pipeline_status_count(cursor, pipeline_status=None) -> tuple:
     """Возвращает кол-во сделок на этапе"""
-    print('Забираю count')
-    select_query = f"""SELECT COUNT(pipeline_status) FROM leads_table WHERE pipeline= 'Продажи CRM | ClickCRM' 
-                    and pipeline_status= '{pipeline_status}'"""
-    cursor.execute(select_query)
-    return cursor.fetchone()
+    try:
+        print('Забираю count')
+        select_query = f"""SELECT COUNT(pipeline_status) FROM leads_table WHERE pipeline= 'Продажи CRM | ClickCRM' 
+                        and pipeline_status= '{pipeline_status}'"""
+        cursor.execute(select_query)
+        return cursor.fetchone()
+    except Exception as error:
+        print(f'select_pipeline_status_count: {error}')
 
 
 @db_delete_decorator
 def delete_from_table(name_of_table: str, connection, cursor) -> None:
     """Удаляет все данные из таблицы"""
-    delete_query = f"""DELETE FROM {name_of_table}"""
-    cursor.execute(delete_query)
-    connection.commit()
-    print('DELETE')
+    try:
+        delete_query = f"""DELETE FROM {name_of_table}"""
+        cursor.execute(delete_query)
+        connection.commit()
+        print('DELETE')
+    except Exception as error:
+        print(f'delete_from_table: {error}')
 
 
 @db_delete_decorator
 def delete_table(connection, cursor, name_of_table: str) -> None:
     """Удаляет таблицу"""
-    delete_query = f"""DROP TABLE {name_of_table}"""
-    cursor.execute(delete_query)
-    connection.commit()
-    print('DELETE')
+    try:
+        delete_query = f"""DROP TABLE {name_of_table}"""
+        cursor.execute(delete_query)
+        connection.commit()
+        print('DELETE')
+    except Exception as error:
+        print(f'delete_table: {error}')
+
 
 @db_delete_decorator_new
 def delete_leads(connection, cursor, delete_list) -> None:
-    print(len(delete_list))
-    delete_query = """DELETE FROM leads_table WHERE ID = %s"""
-    cursor.executemany(delete_query, delete_list)
-    connection.commit()
-    print('DELETED LEADS')
+    try:
+        print(len(delete_list))
+        delete_query = """DELETE FROM leads_table WHERE ID = %s"""
+        cursor.executemany(delete_query, delete_list)
+        connection.commit()
+        print('DELETED LEADS')
+    except Exception as error:
+        print(f'delete_leads: {error}')

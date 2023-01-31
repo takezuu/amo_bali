@@ -14,8 +14,12 @@ def authorization() -> json:
     }
 
     url_for_token = f'{UserData.CLIENT_URL}/oauth2/access_token'
-    request = requests.post(url_for_token, data=data)
-    return request.json()
+    try:
+        request = requests.post(url_for_token, data=data)
+        return request.json()
+    except Exception as error:
+        print(f'authorization: {error}')
+
 
 
 def get_refresh_token(refresh_token: str) -> json:
@@ -27,5 +31,9 @@ def get_refresh_token(refresh_token: str) -> json:
             'redirect_uri': f'{UserData.URI}'}
 
     url_for_token = f'{UserData.CLIENT_URL}/oauth2/access_token'
-    request = requests.post(url_for_token, data=data)
-    return request.json()
+    try:
+        request = requests.post(url_for_token, data=data)
+        return request.json()
+    except Exception as error:
+        print(f'get_refresh_token: {error}')
+
