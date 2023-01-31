@@ -10,8 +10,8 @@ from api_methods import api_requests
 # декораторы
 def api_decorator(func):
     """Цикл while для api функций"""
-    try:
-        def inner(api_name: str):
+    def inner(api_name: str):
+        try:
             tokens = DB_Operations.read_tokens()
             page_num = 1
             req = True
@@ -19,59 +19,103 @@ def api_decorator(func):
                 req = func(page_num, api_name, tokens)
                 page_num += 1
 
-        return inner
-    except Exception as error:
-        print(f'api_decorator: {error}')
+        except Exception as error:
+            print(f'api_decorator: {error}')
+    return inner
+
 
 
 def dict_decorator(func):
     """Цикл while для функций создающие словари"""
-    try:
-
-        def inner(*args, **kwargs):
+    def inner(*args, **kwargs):
+        try:
             page_num = 1
             req = True
             while req:
                 req = func(page_num, *args, **kwargs)
                 page_num += 1
+        except Exception as error:
+            print(f'dict_decorator: {error}')
 
-        return inner
-    except Exception as error:
-        print(f'dict_decorator: {error}')
+    return inner
+
 
 
 def insert_decorator(func):
     """Цикл while для функций, которые записывают данные в базу"""
-    try:
-
-        def inner(*args, **kwargs):
+    def inner(*args, **kwargs):
+        try:
             page_num = 1
             req = True
             while req:
                 req = func(page_num, *args, **kwargs)
                 page_num += 1
+        except Exception as error:
+            print(f'insert_decorator: {error}')
+    return inner
 
-        return inner
-    except Exception as error:
-        print(f'insert_decorator: {error}')
 
 
 def delete_decorator(func):
     """Цикл while для функций, которые записывают данные в базу"""
-    try:
+    def inner(*args, **kwargs):
+        try:
 
-        def inner(*args, **kwargs):
             page_num = 1
             req = True
             while req:
                 req = func(page_num, *args, **kwargs)
                 page_num += 1
 
-        return inner
-    except Exception as error:
-        print(f'delete_decorator: {error}')
+        except Exception as error:
+            print(f'delete_decorator: {error}')
+
+    return inner
 
 
+
+def insert_decorator_reverse(func):
+    """Цикл while для функций, которые записывают данные в базу"""
+
+    def inner(*args, **kwargs):
+        try:
+            count_files = len(os.listdir('Lead_status_changed'))
+            print(count_files)
+            page_num = count_files
+            req = True
+            while req:
+                req = func(page_num, *args, **kwargs)
+                page_num -= 1
+
+        except Exception as error:
+            print(f'insert_decorator_reverse: {error}')
+
+    return inner
+
+@insert_decorator_reverse
+def update_insert_reverse(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, **kwargs):
+    """Обновление записей в базу"""
+    try:
+        file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data, extra_prefix=extra_prefix)
+        print(page_num, 'page')
+    except FileNotFoundError:
+        return False
+    records_to_insert = funcc(data=file_data, **kwargs)
+    insert_funcc(records_to_insert)
+    return True
+
+
+@insert_decorator_reverse
+def first_insert_reverse(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, **kwargs):
+    """Первая запись в базу"""
+    try:
+        file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data, extra_prefix=extra_prefix)
+        print(page_num, 'page')
+    except FileNotFoundError:
+        return False
+    records_to_insert = funcc(data=file_data, **kwargs)
+    insert_funcc(records_to_insert)
+    return True
 # функции
 @api_decorator
 def create_api(page_num: int, api_name: str, tokens):

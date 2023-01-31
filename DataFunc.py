@@ -39,15 +39,13 @@ def read_token() -> json:
 
 def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
     """Читает файл"""
-    try:
-        if extra_prefix is not None:
-            file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
-        else:
-            file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
-        with open(file_path, 'r', encoding='utf-8') as file:
-            return json.load(file)
-    except Exception as error:
-        print(f'read_data_file: {error}')
+    if extra_prefix is not None:
+        file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
+    else:
+        file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
+    with open(file_path, 'r', encoding='utf-8') as file:
+        return json.load(file)
+
 
 
 def check_next_api_page(file_data: json) -> bool:
