@@ -47,7 +47,6 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
         return json.load(file)
 
 
-
 def check_next_api_page(file_data: json) -> bool:
     """Возвращает True/False наличие след. ссылки"""
     try:
@@ -525,7 +524,7 @@ def get_utm_record(data: json) -> list:
 
 def get_lead_status_changed(data) -> list:
     """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
-    archive_pipelines = {}  # read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
+    archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
         status_changed = [[lead['entity_id'], lead['created_at']] for lead in data['_embedded']['events'] if
@@ -578,6 +577,7 @@ def get_lead_status_changed_update(data) -> list:
 
 
 def get_id_deleted_leads(data):
+    """Возвращает список id для удаления"""
     delete_list = []
     try:
         for lead in data['_embedded']['leads']:

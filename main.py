@@ -12,6 +12,7 @@ from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, 
 # create_api(api_name='leads')
 # create_api_filter(api_name='lead_status_changed')
 
+
 # создание словарей
 # create_dict(funcc=DataFunc.get_users, dict_name='users', prefix='Dict')
 # create_dict(funcc=DataFunc.get_pipelines, dict_name='pipelines', prefix='Dict')
@@ -39,8 +40,8 @@ from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, 
 #              users_dict=users_dict, group_dict=group_dict1)
 
 # запись дат перехода в статусы в leads_table
-first_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
-             name_of_data='lead_status_changed')
+# first_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
+#              name_of_data='lead_status_changed')
 
 # запись custom_fields
 # first_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=insert_custom_fields,
@@ -50,5 +51,6 @@ first_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update
 # first_insert(funcc=DataFunc.get_utm_record, insert_funcc=insert_utm_table,
 #              extra_prefix='Dict', name_of_data='utm')
 
+
 # удаляет созданные файлы
-delete_all_files()
+# delete_all_files()
