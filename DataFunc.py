@@ -1,19 +1,25 @@
 import json
 import datetime
+import logging
+
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
+                    filename='example.log', encoding='utf-8', level=logging.DEBUG)
 
 
 def write_tokens(tokens: dict) -> None:
     """Записывает токены в файл"""
     try:
+        logging.info('Записываю токены в файл')
         with open('tokens', 'w', encoding='utf-8') as file:
             json.dump(tokens, file, indent=4)
     except Exception as error:
-        print(f'write_tokens: {error}')
+        logging.error(f'write_tokens: {error}')
 
 
 def write_data(data, name_of_data: str, page_num=None, prefix=None, second_dict_name=None) -> None:
     """Записывает сделки в файл"""
     try:
+        logging.info('Записываю сделки в файл')
         if second_dict_name is not None:
             name_of_data = second_dict_name
         if prefix is not None:
@@ -23,18 +29,19 @@ def write_data(data, name_of_data: str, page_num=None, prefix=None, second_dict_
 
         with open(file_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, sort_keys=False, ensure_ascii=False, indent=4)
-            print('Json получен')
+            logging.info(f'Json получен {page_num} {name_of_data}')
     except Exception as error:
-        print(f'write_data: {error}')
+        logging.error(f'write_data: {error}')
 
 
 def read_token() -> json:
     """Читает токен из файла"""
     try:
+        logging.info('Читаю токен из файла')
         with open('tokens', 'r', encoding='utf-8') as file:
             return json.load(file)
     except Exception as error:
-        print(f'read_token: {error}')
+        logging.error(f'read_token: {error}')
 
 
 def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
@@ -43,6 +50,7 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
         file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
     else:
         file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
+    logging.info(f'Читаю файл {name_of_data}')
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
@@ -50,13 +58,14 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
 def check_next_api_page(file_data: json) -> bool:
     """Возвращает True/False наличие след. ссылки"""
     try:
+        logging.info('Проверяю check_next_api_page')
         if file_data['_links']['next']:
             return True
     except KeyError:
-        print('Получил все файлы!')
+        logging.info('Получил все файлы!')
         return False
     except Exception as error:
-        print(f'check_next_api_page: {error}')
+        logging.error(f'check_next_api_page: {error}')
 
 
 def convert_time(unix_time: int) -> datetime:
@@ -66,7 +75,7 @@ def convert_time(unix_time: int) -> datetime:
     except TypeError:
         return None
     except Exception as error:
-        print(f'convert_time: {error}')
+        logging.info(f'convert_time: {error}')
     else:
         return time
 
@@ -78,7 +87,7 @@ def convert_time_with_time(unix_time: int) -> datetime:
     except TypeError:
         return None
     except Exception as error:
-        print(f'convert_time_with_time: {error}')
+        logging.error(f'convert_time_with_time: {error}')
     else:
         return time
 
@@ -91,7 +100,7 @@ def convert_group_id(group_id: int, group_dict) -> str:
         else:
             return 'Нет группы'
     except Exception as error:
-        print(f'convert_group_id: {error}')
+        logging.error(f'convert_group_id: {error}')
 
 
 def convert_status_id(status_id: str, statuses_dict: dict, pipeline_id):
@@ -99,7 +108,7 @@ def convert_status_id(status_id: str, statuses_dict: dict, pipeline_id):
     try:
         return list((status[1] for status in statuses_dict[str(pipeline_id)] if status[0] == status_id))[0]
     except Exception as error:
-        print(f'convert_status_id: {error}')
+        logging.error(f'convert_status_id: {error}')
 
 
 def convert_responsible_id(responsible_id: int, users_dict: dict) -> str or None:
@@ -111,7 +120,7 @@ def convert_responsible_id(responsible_id: int, users_dict: dict) -> str or None
         else:
             return None
     except Exception as error:
-        print(f'convert_responsible_id: {error}')
+        logging.error(f'convert_responsible_id: {error}')
 
 
 def convert_pipeline_id(user_pipeline_id: int, pipelines_dict: dict) -> str or None:
@@ -123,12 +132,13 @@ def convert_pipeline_id(user_pipeline_id: int, pipelines_dict: dict) -> str or N
         else:
             return None
     except Exception as error:
-        print(f'convert_pipeline_id: {error}')
+        logging.error(f'convert_pipeline_id: {error}')
 
 
 def status_of_lead(status_id: int) -> str:
     """Возвращает статус сделки"""
     try:
+        logging.info('Возвращаю статус сделки')
         if status_id == 143:
             return 'Проиграна'
         elif status_id == 142:
@@ -136,23 +146,25 @@ def status_of_lead(status_id: int) -> str:
         else:
             return 'Активная'
     except Exception as error:
-        print(f'status_of_lead: {error}')
+        logging.error(f'status_of_lead: {error}')
 
 
 def convert_have_task(time) -> str:
     """Возвращает наличие задачи"""
     try:
+        logging.info('Возвращаю наличие задачи')
         if time is None:
             return 'No'
         else:
             return 'Yes'
     except Exception as error:
-        print(f'convert_have_task: {error}')
+        logging.error(f'convert_have_task: {error}')
 
 
 def convert_task_time(closest_task_at):
     """Возвращает просрочена задача или нет"""
     try:
+        logging.info('Возвращаю просрочена задача или нет')
         if closest_task_at is not None:
             if closest_task_at < datetime.date.today():
                 return 'Yes'
@@ -161,7 +173,7 @@ def convert_task_time(closest_task_at):
         else:
             return None
     except Exception as error:
-        print(f'convert_task_time: {error}')
+        logging.error(f'convert_task_time: {error}')
 
 
 def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group_dict, archive_pipelines) -> list:
@@ -169,6 +181,7 @@ def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     records_to_insert = []
     leads = data['_embedded']['leads']
+    logging.info('Подготовливаю строки для записи в базу')
     try:
         for lead in leads:
             if (str(lead['pipeline_id']) not in archive_pipelines and str(lead['pipeline_id']) not in block_pipelines):
@@ -196,7 +209,7 @@ def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group
                 records_to_insert.append(record_to_insert)
         return records_to_insert
     except Exception as error:
-        print(f'get_lead_record: {error}')
+        logging.error(f'get_lead_record: {error}')
 
 
 def get_lead_update_record(data: json, pipelines_dict, statuses_dict, users_dict, group_dict,
@@ -205,6 +218,7 @@ def get_lead_update_record(data: json, pipelines_dict, statuses_dict, users_dict
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     records_to_insert = []
     leads = data['_embedded']['leads']
+    logging.info('Подготовливаю строки для записи в базу')
     try:
         for lead in leads:
             if (str(lead['pipeline_id']) not in archive_pipelines and str(
@@ -235,74 +249,79 @@ def get_lead_update_record(data: json, pipelines_dict, statuses_dict, users_dict
         return records_to_insert
 
     except Exception as error:
-        print(f'get_lead_update_record: {error}')
+        logging.error(f'get_lead_update_record: {error}')
 
 
 def get_users(users: json) -> dict:
     """Возвращает словарь пользователей id+name"""
     try:
+        logging.info('Возвращаю словарь пользователей id+name')
         users = users['_embedded']['users']
-        print('Словарь пользователей готов')
+        logging.info('Создаю словарь пользователей')
         return {user['id']: user['name'] for user in users}
     except Exception as error:
-        print(f'get_users: {error}')
+        logging.error(f'get_users: {error}')
 
 
 def get_pipelines(pipelines: json) -> dict:
     """Возвращает словарь воронок id+name"""
     try:
+        logging.info('Возвращаю словарь воронок id+name')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         pipelines = pipelines['_embedded']['pipelines']
-        print('Словарь воронок готов')
+        logging.info('Создаю словарь воронок')
         return {pipeline['id']: pipeline['name'] for pipeline in pipelines if not pipeline['is_archive']
                 and pipeline['id'] not in block_pipelines}
     except Exception as error:
-        print(f'get_pipelines: {error}')
+        logging.error(f'get_pipelines: {error}')
 
 
 def get_archive_pipelines(pipelines: json) -> dict:
     """Возвращает словарь архивных воронок id+name"""
     try:
+        logging.info('Возвращаю словарь архивных воронок id+name')
         pipelines = pipelines['_embedded']['pipelines']
-        print('Словарь воронок готов')
+        logging.info('Создаю словарь воронок')
         return {pipeline['id']: pipeline['name'] for pipeline in pipelines if pipeline['is_archive']}
     except Exception as error:
-        print(f'get_archive_pipelines: {error}')
+        logging.error(f'get_archive_pipelines: {error}')
 
 
 def get_statuses(pipelines: json) -> dict:
     """Возвращает словарь воронок и этапов воронки id+name+statuses"""
     pipelines = pipelines['_embedded']['pipelines']
-    print('Словарь воронок и этапов готов')
+    logging.info('Создаю словарь воронок и этапов')
     try:
         return {pipeline['id']: [[status['id'], status['name']] for status in pipeline['_embedded']['statuses']] for
                 pipeline in pipelines if not pipeline['is_archive']}
     except Exception as error:
-        print(f'get_statuses: {error}')
+        logging.error(f'get_statuses: {error}')
 
 
 def get_leads_custom_fields_dict(leads) -> dict:
     """Возвращает словарь лидов с дополнительными полями"""
     try:
+        logging.info('Возвращаю словарь лидов с дополнительными полями')
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         leads = leads['_embedded']['leads']
-        print('Словарь пользователей и доп.полей готов')
+        logging.info('Создаю словарь пользователей и доп.полей')
         return {
             lead['id']: [[field['field_name'], field['values'][0]['value']] for field in lead['custom_fields_values']]
             for lead in leads if lead['custom_fields_values'] and (str(lead['pipeline_id']) not in archive_pipelines and
                                                                    str(lead['pipeline_id']) not in block_pipelines)}
     except Exception as error:
-        print(f'get_leads_custom_fields_dict: {error}')
+        logging.error(f'get_leads_custom_fields_dict: {error}')
 
 
 def get_leads_custom_fields_dict_update(leads) -> dict:
     """Возвращает словарь лидов с дополнительными полями для обновления"""
     try:
+        logging.info('Возвращаю словарь лидов с дополнительными полями для обновления')
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         leads = leads['_embedded']['leads']
-        print('Словарь пользователей и доп.полей готов для обновления')
+        logging.info('Создаю словарь пользователей и доп.полей для обновления')
         return {
             lead['id']: [[field['field_name'], field['values'][0]['value']] for field in lead['custom_fields_values']]
             for lead in leads if lead['custom_fields_values'] and ((str(lead['pipeline_id']) not in archive_pipelines
@@ -312,11 +331,12 @@ def get_leads_custom_fields_dict_update(leads) -> dict:
                                                                         (datetime.date.today() - datetime.timedelta(
                                                                             days=1))))}
     except Exception as error:
-        print(f'get_leads_custom_fields_dict_update: {error}')
+        logging.error(f'get_leads_custom_fields_dict_update: {error}')
 
 
 def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями"""
+    logging.info('Возвращаю преобразовыннй словарь лидов с дополнительными полями')
     custom_fields = {'Был в Новая заявка': 1, 'Был в Менеджер назначен': 2, 'Был в Взята в работу': 3,
                      'Был в Попытка связаться': 4, 'Был в Презентация отправлена': 5, 'Был в Контакт состоялся': 6,
                      'Был в Встреча назначена': 7, 'Был в Встреча отменена': 8, 'Был в Встреча проведена': 9,
@@ -342,14 +362,15 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
         # очищение от пустых лидов без доп.полей
         custom_fields_dict = {lead: custom_fields for lead, custom_fields in custom_fields_dict.items() if
                               custom_fields}
-        print('Словарь доп.полей готов')
+        logging.info('Создаю словарь доп.полей')
         return custom_fields_dict
     except Exception as error:
-        print(f'get_custom_fields_dict: {error}')
+        logging.error(f'get_custom_fields_dict: {error}')
 
 
 def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями"""
+    logging.info('Возвращаю преобразовыннй словарь лидов с дополнительными полями')
     custom_fields = {'fbclid': 1, 'yclid': 2, 'gclid': 3, 'gclientid': 4, 'from': 5,
                      'utm_source': 6, 'utm_medium': 7, 'utm_campaign': 8, 'utm_term': 9, 'utm_content': 10,
                      'utm_referrer': 11, '_ym_uid': 12, '_ym_counter': 13, 'roistat': 14}
@@ -362,10 +383,10 @@ def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
             in leads_dict.keys()}
         # очищение от пустых лидов без доп.полей
         utm_dict = {lead: custom_fields for lead, custom_fields in utm_dict.items() if custom_fields}
-        print('Словарь доп.полей готов')
+        logging.info('Создаю словарь доп.полей')
         return utm_dict
     except Exception as error:
-        print(f'get_utm_dict: {error}')
+        logging.error(f'get_utm_dict: {error}')
 
 
 def convert_item(lead: str, custom_fields_dict: dict, need_item: str):
@@ -381,7 +402,7 @@ def convert_item(lead: str, custom_fields_dict: dict, need_item: str):
                 else:
                     return item[str(need_item)]
     except Exception as error:
-        print(f'convert_item: {error}')
+        logging.error(f'convert_item: {error}')
 
 
 def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str):
@@ -391,12 +412,13 @@ def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str):
             if need_item in item:
                 return str(item[str(need_item)])
     except Exception as error:
-        print(f'convert_item_2: {error}')
+        logging.error(f'convert_item_2: {error}')
 
 
 def get_custom_fields_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
     records_to_insert = []
+    logging.info('Возвращаю список записей для записи в базу')
     try:
         for lead in data.keys():
             lead_id = int(lead)
@@ -489,11 +511,12 @@ def get_custom_fields_record(data: json) -> list:
             records_to_insert.append(record_to_insert)
         return records_to_insert
     except Exception as error:
-        print(f'get_custom_fields_record: {error}')
+        logging.error(f'get_custom_fields_record: {error}')
 
 
 def get_utm_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
+    logging.info('Возвращаю список записей для записи в базу')
     records_to_insert = []
     try:
         for lead in data.keys():
@@ -519,11 +542,12 @@ def get_utm_record(data: json) -> list:
             records_to_insert.append(record_to_insert)
         return records_to_insert
     except Exception as error:
-        print(f'get_utm_record: {error}')
+        logging.error(f'get_utm_record: {error}')
 
 
 def get_lead_status_changed(data) -> list:
     """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
+    logging.info('Возвращаю словарь, где указан id лида и дата перехода в этап воронки')
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
@@ -545,11 +569,12 @@ def get_lead_status_changed(data) -> list:
 
         return records
     except Exception as error:
-        print(f'get_lead_status_changed: {error}')
+        logging.error(f'get_lead_status_changed: {error}')
 
 
 def get_lead_status_changed_update(data) -> list:
     """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
+    logging.info('Возвращаю словарь, где указан id лида и дата перехода в этап воронки')
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
@@ -573,11 +598,12 @@ def get_lead_status_changed_update(data) -> list:
 
         return records
     except Exception as error:
-        print(f'get_lead_status_changed_update: {error}')
+        logging.error(f'get_lead_status_changed_update: {error}')
 
 
 def get_id_deleted_leads(data):
     """Возвращает список id для удаления"""
+    logging.info('Возвращаю список id для удаления')
     delete_list = []
     try:
         for lead in data['_embedded']['leads']:
@@ -585,4 +611,4 @@ def get_id_deleted_leads(data):
 
         return delete_list
     except Exception as error:
-        print(f'get_id_deleted_leads: {error}')
+        logging.error(f'get_id_deleted_leads: {error}')

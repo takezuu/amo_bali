@@ -1,22 +1,25 @@
 import psycopg2
 from pw import DataBase
-
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
+                    filename='example.log', encoding='utf-8', level=logging.DEBUG)
 
 def db_decorator(func):
     def inner(records_to_insert):
         try:
             if len(records_to_insert) > 0:
+                logging.info('Запускаю db_decorator')
                 connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER,
                                               password=DataBase.PASSWORD,
                                               host=DataBase.HOST, port=DataBase.PORT)
                 cursor = connection.cursor()
-                print('Connection success!')
+                logging.info('Connection success!')
                 func(records_to_insert, connection, cursor)
 
                 connection.close()
-                print('Connection close!')
+                logging.info('Connection close!')
         except Exception as error:
-            print(f'db_decorator: {error}')
+            logging.error(f'db_decorator: {error}')
 
     return inner
 
@@ -24,16 +27,17 @@ def db_decorator(func):
 def db_create_decorator(func):
     def inner():
         try:
+            logging.info('Запускаю db_create_decorator')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
-            print('Connection success!')
+            logging.info('Connection success!')
             func(connection, cursor)
 
             connection.close()
-            print('Connection close!')
+            logging.info('Connection close!')
         except Exception as error:
-            print(f'db_create_decorator: {error}')
+            logging.error(f'db_create_decorator: {error}')
 
     return inner
 
@@ -41,16 +45,17 @@ def db_create_decorator(func):
 def db_select_decorator(func):
     def inner(*args):
         try:
+            logging.info('Запускаю db_select_decorator')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
-            print('Connection success!')
+            logging.info('Connection success!')
             tokens = func(cursor, *args)
             connection.close()
-            print('Connection close!')
+            logging.info('Connection close!')
             return tokens
         except Exception as error:
-            print(f'db_select_decorator: {error}')
+            logging.error(f'db_select_decorator: {error}')
 
     return inner
 
@@ -58,16 +63,17 @@ def db_select_decorator(func):
 def db_delete_decorator(func):
     def inner(name_of_table):
         try:
+            logging.info('Запускаю db_delete_decorator')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
-            print('Connection success!')
+            logging.info('Connection success!')
             func(connection, cursor, name_of_table)
 
             connection.close()
-            print('Connection close!')
+            logging.info('Connection close!')
         except Exception as error:
-            print(f'db_delete_decorator: {error}')
+            logging.error(f'db_delete_decorator: {error}')
 
     return inner
 
@@ -75,16 +81,17 @@ def db_delete_decorator(func):
 def db_delete_decorator_new(func):
     def inner(*args):
         try:
+            logging.info('Запускаю db_delete_decorator_new')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
-            print('Connection success!')
+            logging.info('Connection success!')
             func(connection, cursor, *args)
 
             connection.close()
-            print('Connection close!')
+            logging.info('Connection close!')
         except Exception as error:
-            print(f'db_delete_decorator_new: {error}')
+            logging.error(f'db_delete_decorator_new: {error}')
 
     return inner
 
@@ -93,6 +100,7 @@ def db_delete_decorator_new(func):
 def create_table_leads_table(connection, cursor) -> None:
     """Cоздает таблицу сделок"""
     try:
+        logging.info('create_table_leads_table')
         create_query = """CREATE TABLE leads_table(
         ID INT PRIMARY KEY NOT NULL ,
         Название TEXT,
@@ -111,15 +119,16 @@ def create_table_leads_table(connection, cursor) -> None:
         Просрочена_задача TEXT);"""
         cursor.execute(create_query)
         connection.commit()
-        print('CREATE TABLE LEADS TABLE')
+        logging.info('CREATE TABLE LEADS TABLE')
     except Exception as error:
-        print(f'create_table_leads_table: {error}')
+        logging.error(f'create_table_leads_table: {error}')
 
 
 @db_create_decorator
 def create_table_custom_fields_table(connection, cursor) -> None:
     """Cоздает таблицу кастомных полей"""
     try:
+        logging.info('create_table_custom_fields_table')
         create_query = """CREATE TABLE custom_fields_table(
         ID INT PRIMARY KEY NOT NULL ,
         Был_в_Новая_заявка TEXT,
@@ -173,15 +182,16 @@ def create_table_custom_fields_table(connection, cursor) -> None:
         Язык TEXT);"""
         cursor.execute(create_query)
         connection.commit()
-        print('CREATE TABLE CUSTOM FIELDS')
+        logging.info('CREATE TABLE CUSTOM FIELDS')
     except Exception as error:
-        print(f'create_table_custom_fields_table: {error}')
+        logging.error(f'create_table_custom_fields_table: {error}')
 
 
 @db_create_decorator
 def create_table_utm(connection, cursor) -> None:
     """Cоздает таблицу utm меток"""
     try:
+        logging.info('create_table_utm')
         create_query = """CREATE TABLE utm_table(
         ID INT PRIMARY KEY NOT NULL,
         fbclid TEXT,
@@ -200,15 +210,16 @@ def create_table_utm(connection, cursor) -> None:
         roistat TEXT);"""
         cursor.execute(create_query)
         connection.commit()
-        print('CREATE TABLE UTM')
+        logging.info('CREATE TABLE UTM')
     except Exception as error:
-        print(f'create_table_utm: {error}')
+        logging.error(f'create_table_utm: {error}')
 
 
 @db_create_decorator
 def create_pipeline_table(connection, cursor) -> None:
     """Cоздает таблицу utm меток"""
     try:
+        logging.info('create create_pipeline_table')
         create_query = """CREATE TABLE pipeline_table(
         Дата DATE PRIMARY KEY NOT NULL,
         Неразобранное INT,
@@ -226,31 +237,32 @@ def create_pipeline_table(connection, cursor) -> None:
         Закрыто_и_не_реализовано INT);"""
         cursor.execute(create_query)
         connection.commit()
-        print('CREATE TABLE PIPELINE')
+        logging.info('CREATE TABLE PIPELINE')
     except Exception as error:
-        print(f'create_pipeline_table: {error}')
+        logging.error(f'create_pipeline_table: {error}')
 
 
 @db_create_decorator
 def create_table_tk(connection, cursor) -> None:
     """Cоздает таблицу тк"""
     try:
+        logging.info('create tk_table')
         create_query = """CREATE TABLE tk_table(
         ID INT PRIMARY KEY NOT NULL,
         access_token TEXT, 
         refresh_token TEXT);"""
         cursor.execute(create_query)
         connection.commit()
-        print('CREATE TABLE TK')
+        logging.info('CREATE TABLE TK')
     except Exception as error:
-        print(f'create_table_tk: {error}')
+        logging.error(f'create_table_tk: {error}')
 
 
 @db_decorator
 def insert_leads(records_to_insert: list, connection, cursor) -> None:
     """Записывает сделки в базу"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'insert_leads {len(records_to_insert)}')
         insert_query = """INSERT INTO leads_table (
                 ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,  Дата_перехода_на_этап, 
                 Дата_создания, Дата_изменения, Дата_закрытия,
@@ -259,14 +271,14 @@ def insert_leads(records_to_insert: list, connection, cursor) -> None:
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'insert_leads: {error}')
+        logging.error(f'insert_leads: {error}')
 
 
 @db_decorator
 def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
     """Записывает дополнительные поля в базу"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'insert_custom_fields {len(records_to_insert)}')
         insert_query = """INSERT INTO custom_fields_table (
                 ID, Был_в_Новая_заявка, Был_в_Менеджер_назначен, Был_в_Взята_в_работу, Был_в_Попытка_связаться, 
                 Был_в_Презентация_отправлена, Был_в_Контакт_состоялся, Был_в_Встреча_назначена, 
@@ -286,14 +298,14 @@ def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'insert_custom_fields: {error}')
+        logging.error(f'insert_custom_fields: {error}')
 
 
 @db_decorator
 def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
     """Записывает utm поля в базу"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'insert_utm_table {len(records_to_insert)}')
         insert_query = """INSERT INTO utm_table (
                 ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
                 utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
@@ -301,13 +313,14 @@ def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'insert_utm_table: {error}')
+        logging.error(f'insert_utm_table: {error}')
 
 
 @db_decorator
 def insert_tk_table(records_to_insert, connection, cursor) -> None:
     """Обновляет и записывает токены в базу"""
     try:
+        logging.info('insert_tk_table')
         insert_query = f"""INSERT INTO tk_table (
         ID, access_token, refresh_token)
         VALUES (1, '{records_to_insert["access_token"]}', '{records_to_insert["refresh_token"]}')
@@ -317,14 +330,14 @@ def insert_tk_table(records_to_insert, connection, cursor) -> None:
         cursor.execute(insert_query)
         connection.commit()
     except Exception as error:
-        print(f'insert_tk_table: {error}')
+        logging.error(f'insert_tk_table: {error}, {records_to_insert}')
 
 
 @db_decorator
-def insert_pipeline_table(record_to_insert: list, connection, cursor) -> None:
+def insert_pipeline_table(records_to_insert: list, connection, cursor) -> None:
     """Записывает сделки в базу"""
     try:
-        print(len(record_to_insert))
+        logging.info(f'insert_pipeline_table {len(records_to_insert)}')
         insert_query = """INSERT INTO pipeline_table (
                 Дата, Неразобранное, Получена_новая_заявка, Заявка_взята_в_работу, Клиент_квалифицирован, 
                 Демонстрация_назначена, Демонстрация_проведена, КП_отправлено, Оплата_согласована,
@@ -345,17 +358,17 @@ def insert_pipeline_table(record_to_insert: list, connection, cursor) -> None:
                 Внесена_предоплата = EXCLUDED.Внесена_предоплата,
                 Успешно_реализовано = EXCLUDED.Успешно_реализовано,
                 Закрыто_и_не_реализовано = EXCLUDED.Закрыто_и_не_реализовано"""
-        cursor.execute(insert_query, record_to_insert)
+        cursor.execute(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'insert_pipeline_table: {error}')
+        logging.error(f'insert_pipeline_table: {error}')
 
 
 @db_decorator
 def update_leads(records_to_insert: list, connection, cursor) -> None:
     """Обновляет сделки в базе"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'update_leads {len(records_to_insert)}')
         update_query = """INSERT INTO leads_table (
                 ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки,
                 Дата_создания, Дата_изменения, Дата_закрытия,
@@ -371,28 +384,28 @@ def update_leads(records_to_insert: list, connection, cursor) -> None:
         cursor.executemany(update_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'update_leads: {error}')
+        logging.error(f'update_leads: {error}')
 
 
 @db_decorator
 def update_leads_pipelines_status_date(records_to_insert: list, connection, cursor) -> None:
     """Записывает дату перехода в этап воронки"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'update_leads_pipelines_status_date {len(records_to_insert)}')
         insert_query = """UPDATE leads_table SET
                 Дата_перехода_на_этап = %s WHERE ID = %s"""
 
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'update_leads_pipelines_status_date: {error}')
+        logging.error(f'update_leads_pipelines_status_date: {error}')
 
 
 @db_decorator
 def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
     """Обновляет дополнительные поля в базе"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'update_custom_fields {len(records_to_insert)}')
         update_query = """INSERT INTO custom_fields_table (
                 ID, Был_в_Новая_заявка, Был_в_Менеджер_назначен, Был_в_Взята_в_работу, Был_в_Попытка_связаться, 
                 Был_в_Презентация_отправлена, Был_в_Контакт_состоялся, Был_в_Встреча_назначена, 
@@ -463,14 +476,14 @@ def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
         cursor.executemany(update_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'update_custom_fields: {error}')
+        logging.error(f'update_custom_fields: {error}')
 
 
 @db_decorator
 def update_utm_table(records_to_insert: list, connection, cursor) -> None:
     """Обновляет utm в базе"""
     try:
-        print(len(records_to_insert))
+        logging.info(f'update_utm_table {len(records_to_insert)}')
         update_query = """INSERT INTO utm_table (
                 ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
                 utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
@@ -484,64 +497,67 @@ def update_utm_table(records_to_insert: list, connection, cursor) -> None:
         cursor.executemany(update_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        print(f'update_utm_table: {error}')
+        logging.error(f'update_utm_table: {error}')
 
 
 @db_select_decorator
 def read_tokens(cursor) -> tuple:
     """Читает токены из базы"""
     try:
+        logging.info('read_tokens')
         select_query = """SELECT access_token, refresh_token FROM tk_table"""
         cursor.execute(select_query)
         return cursor.fetchone()
     except Exception as error:
-        print(f'read_tokens: {error}')
+        logging.error(f'read_tokens: {error}')
 
 
 @db_select_decorator
 def select_pipeline_status_count(cursor, pipeline_status=None) -> tuple:
     """Возвращает кол-во сделок на этапе"""
     try:
-        print('Забираю count')
+        logging.info('Забираю count')
         select_query = f"""SELECT COUNT(pipeline_status) FROM leads_table WHERE pipeline= 'Продажи CRM | ClickCRM' 
                         and pipeline_status= '{pipeline_status}'"""
         cursor.execute(select_query)
         return cursor.fetchone()
     except Exception as error:
-        print(f'select_pipeline_status_count: {error}')
+        logging.error(f'select_pipeline_status_count: {error}')
 
 
 @db_delete_decorator
 def delete_from_table(name_of_table: str, connection, cursor) -> None:
     """Удаляет все данные из таблицы"""
     try:
+        logging.info(f'delete_from_table {name_of_table}')
         delete_query = f"""DELETE FROM {name_of_table}"""
         cursor.execute(delete_query)
         connection.commit()
-        print('DELETE')
+        logging.info('DELETE')
     except Exception as error:
-        print(f'delete_from_table: {error}')
+        logging.error(f'delete_from_table: {error}')
 
 
 @db_delete_decorator
 def delete_table(connection, cursor, name_of_table: str) -> None:
     """Удаляет таблицу"""
     try:
+        logging.info('delete_table')
         delete_query = f"""DROP TABLE {name_of_table}"""
         cursor.execute(delete_query)
         connection.commit()
-        print('DELETE')
+        logging.info('DELETE')
     except Exception as error:
-        print(f'delete_table: {error}')
+        logging.error(f'delete_table: {error}')
 
 
 @db_delete_decorator_new
 def delete_leads(connection, cursor, delete_list) -> None:
     try:
-        print(len(delete_list))
+        logging.info(f'delete_leads {len(delete_list)}')
         delete_query = """DELETE FROM leads_table WHERE ID = %s"""
         cursor.executemany(delete_query, delete_list)
         connection.commit()
-        print('DELETED LEADS')
+        logging.info('DELETED LEADS')
     except Exception as error:
-        print(f'delete_leads: {error}')
+        logging.error(f'delete_leads: {error}')

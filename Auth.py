@@ -1,7 +1,9 @@
 import json
 import requests
 from pw import UserData
-
+import logging
+logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
+                    filename='example.log', encoding='utf-8', level=logging.DEBUG)
 
 def authorization() -> json:
     """Первая авторизация и получение токенов"""
@@ -15,10 +17,11 @@ def authorization() -> json:
 
     url_for_token = f'{UserData.CLIENT_URL}/oauth2/access_token'
     try:
+        logging.info('Делаю post запрос на первую авторизацию')
         request = requests.post(url_for_token, data=data)
         return request.json()
     except Exception as error:
-        print(f'authorization: {error}')
+        logging.error(f'authorization: {error}')
 
 
 
@@ -32,8 +35,9 @@ def get_refresh_token(refresh_token: str) -> json:
 
     url_for_token = f'{UserData.CLIENT_URL}/oauth2/access_token'
     try:
+        logging.info('Делаю post запрос для получения нового токена')
         request = requests.post(url_for_token, data=data)
         return request.json()
     except Exception as error:
-        print(f'get_refresh_token: {error}')
+        logging.error(f'get_refresh_token: {error}')
 
