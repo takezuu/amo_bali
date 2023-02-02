@@ -57,7 +57,6 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
 def check_next_api_page(file_data: json) -> bool:
     """Возвращает True/False наличие след. ссылки"""
     try:
-        logging.info('Проверяю check_next_api_page')
         if file_data['_links']['next']:
             return True
     except KeyError:
@@ -137,7 +136,6 @@ def convert_pipeline_id(user_pipeline_id: int, pipelines_dict: dict) -> str or N
 def status_of_lead(status_id: int) -> str:
     """Возвращает статус сделки"""
     try:
-        logging.info('Возвращаю статус сделки')
         if status_id == 143:
             return 'Проиграна'
         elif status_id == 142:
@@ -151,7 +149,6 @@ def status_of_lead(status_id: int) -> str:
 def convert_have_task(time) -> str:
     """Возвращает наличие задачи"""
     try:
-        logging.info('Возвращаю наличие задачи')
         if time is None:
             return 'No'
         else:
@@ -163,7 +160,6 @@ def convert_have_task(time) -> str:
 def convert_task_time(closest_task_at):
     """Возвращает просрочена задача или нет"""
     try:
-        logging.info('Возвращаю просрочена задача или нет')
         if closest_task_at is not None:
             if closest_task_at < datetime.date.today():
                 return 'Yes'
@@ -254,7 +250,6 @@ def get_lead_update_record(data: json, pipelines_dict, statuses_dict, users_dict
 def get_users(users: json) -> dict:
     """Возвращает словарь пользователей id+name"""
     try:
-        logging.info('Возвращаю словарь пользователей id+name')
         users = users['_embedded']['users']
         logging.info('Создаю словарь пользователей')
         return {user['id']: user['name'] for user in users}
@@ -265,7 +260,6 @@ def get_users(users: json) -> dict:
 def get_pipelines(pipelines: json) -> dict:
     """Возвращает словарь воронок id+name"""
     try:
-        logging.info('Возвращаю словарь воронок id+name')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         pipelines = pipelines['_embedded']['pipelines']
         logging.info('Создаю словарь воронок')
@@ -278,7 +272,6 @@ def get_pipelines(pipelines: json) -> dict:
 def get_archive_pipelines(pipelines: json) -> dict:
     """Возвращает словарь архивных воронок id+name"""
     try:
-        logging.info('Возвращаю словарь архивных воронок id+name')
         pipelines = pipelines['_embedded']['pipelines']
         logging.info('Создаю словарь воронок')
         return {pipeline['id']: pipeline['name'] for pipeline in pipelines if pipeline['is_archive']}
@@ -289,7 +282,6 @@ def get_archive_pipelines(pipelines: json) -> dict:
 def get_statuses(pipelines: json) -> dict:
     """Возвращает словарь воронок и этапов воронки id+name+statuses"""
     pipelines = pipelines['_embedded']['pipelines']
-    logging.info('Создаю словарь воронок и этапов')
     try:
         return {pipeline['id']: [[status['id'], status['name']] for status in pipeline['_embedded']['statuses']] for
                 pipeline in pipelines if not pipeline['is_archive']}
@@ -300,7 +292,6 @@ def get_statuses(pipelines: json) -> dict:
 def get_leads_custom_fields_dict(leads) -> dict:
     """Возвращает словарь лидов с дополнительными полями"""
     try:
-        logging.info('Возвращаю словарь лидов с дополнительными полями')
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         leads = leads['_embedded']['leads']
@@ -316,7 +307,6 @@ def get_leads_custom_fields_dict(leads) -> dict:
 def get_leads_custom_fields_dict_update(leads) -> dict:
     """Возвращает словарь лидов с дополнительными полями для обновления"""
     try:
-        logging.info('Возвращаю словарь лидов с дополнительными полями для обновления')
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         leads = leads['_embedded']['leads']
@@ -335,7 +325,6 @@ def get_leads_custom_fields_dict_update(leads) -> dict:
 
 def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями"""
-    logging.info('Возвращаю преобразовыннй словарь лидов с дополнительными полями')
     custom_fields = {'Был в Новая заявка': 1, 'Был в Менеджер назначен': 2, 'Был в Взята в работу': 3,
                      'Был в Попытка связаться': 4, 'Был в Презентация отправлена': 5, 'Был в Контакт состоялся': 6,
                      'Был в Встреча назначена': 7, 'Был в Встреча отменена': 8, 'Был в Встреча проведена': 9,
@@ -369,7 +358,6 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
 
 def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями"""
-    logging.info('Возвращаю преобразовыннй словарь лидов с дополнительными полями')
     custom_fields = {'fbclid': 1, 'yclid': 2, 'gclid': 3, 'gclientid': 4, 'from': 5,
                      'utm_source': 6, 'utm_medium': 7, 'utm_campaign': 8, 'utm_term': 9, 'utm_content': 10,
                      'utm_referrer': 11, '_ym_uid': 12, '_ym_counter': 13, 'roistat': 14}
@@ -546,7 +534,6 @@ def get_utm_record(data: json) -> list:
 
 def get_lead_status_changed(data) -> list:
     """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
-    logging.info('Возвращаю словарь, где указан id лида и дата перехода в этап воронки')
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
@@ -573,7 +560,6 @@ def get_lead_status_changed(data) -> list:
 
 def get_lead_status_changed_update(data) -> list:
     """Возвращает словарь, где указан id лида и дата перехода в этап воронки"""
-    logging.info('Возвращаю словарь, где указан id лида и дата перехода в этап воронки')
     archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
@@ -602,7 +588,6 @@ def get_lead_status_changed_update(data) -> list:
 
 def get_id_deleted_leads(data):
     """Возвращает список id для удаления"""
-    logging.info('Возвращаю список id для удаления')
     delete_list = []
     try:
         for lead in data['_embedded']['leads']:
