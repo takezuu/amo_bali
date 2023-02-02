@@ -50,7 +50,6 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
         file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
     else:
         file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
-    logging.info(f'Читаю файл {name_of_data}')
     with open(file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 

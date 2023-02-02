@@ -35,8 +35,8 @@ archive_pipelines = DataFunc.read_data_file(name_of_data='archive_pipelines', ex
 statuses_dict = DataFunc.read_data_file(name_of_data='statuses', extra_prefix='Dict')
 users_dict = DataFunc.read_data_file(name_of_data='users', extra_prefix='Dict')
 group_dict1 = DataFunc.read_data_file(name_of_data='group', extra_prefix='Dict')
-#
-# # обновление leads_table
+
+# обновление leads_table
 update_insert(funcc=DataFunc.get_lead_update_record, insert_funcc=update_leads, name_of_data='leads',
               pipelines_dict=pipelines_dict, archive_pipelines=archive_pipelines, statuses_dict=statuses_dict,
               users_dict=users_dict, group_dict=group_dict1)
