@@ -161,7 +161,7 @@ def convert_task_time(closest_task_at):
     """Возвращает просрочена задача или нет"""
     try:
         if closest_task_at is not None:
-            if closest_task_at < datetime.date.today():
+            if closest_task_at.date() < datetime.date.today():
                 return 'Yes'
             else:
                 return 'No'
@@ -190,9 +190,9 @@ def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group
                                                     pipeline_id=lead['pipeline_id'])
                 pipeline_date = None
                 created_at = convert_time(lead['created_at'])
-                updated_at = convert_time(lead['updated_at'])
+                updated_at = convert_time_with_time(lead['updated_at'])
                 closed_at = convert_time(lead['closed_at'])
-                closest_task_at = convert_time(lead['closest_task_at'])
+                closest_task_at = convert_time_with_time(lead['closest_task_at'])
                 lead_status = status_of_lead(lead['status_id'])
                 have_task = convert_have_task(closest_task_at)
                 overdue_task = convert_task_time(closest_task_at)
