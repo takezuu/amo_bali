@@ -6,12 +6,15 @@ import DataFunc
 from Auth import get_refresh_token, authorization
 from api_methods import api_requests
 import logging
+
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                     filename='example.log', encoding='utf-8', level=logging.DEBUG)
+
 
 # декораторы
 def api_decorator(func):
     """Цикл while для api функций"""
+
     def inner(api_name: str):
         try:
             logging.info('Запускаю api_decorator')
@@ -24,12 +27,13 @@ def api_decorator(func):
 
         except Exception as error:
             logging.error(f'api_decorator: {error}')
-    return inner
 
+    return inner
 
 
 def dict_decorator(func):
     """Цикл while для функций создающие словари"""
+
     def inner(*args, **kwargs):
         try:
             logging.info('Запускаю dict_decorator')
@@ -44,9 +48,9 @@ def dict_decorator(func):
     return inner
 
 
-
 def insert_decorator(func):
     """Цикл while для функций, которые записывают данные в базу"""
+
     def inner(*args, **kwargs):
         try:
             logging.info('Запускаю insert_decorator')
@@ -57,12 +61,13 @@ def insert_decorator(func):
                 page_num += 1
         except Exception as error:
             logging.error(f'insert_decorator: {error}')
-    return inner
 
+    return inner
 
 
 def delete_decorator(func):
     """Цикл while для функций, которые записывают данные в базу"""
+
     def inner(*args, **kwargs):
         try:
             logging.info('Запускаю delete_decorator')
@@ -76,7 +81,6 @@ def delete_decorator(func):
             logging.error(f'delete_decorator: {error}')
 
     return inner
-
 
 
 def insert_decorator_reverse(func):
@@ -97,6 +101,7 @@ def insert_decorator_reverse(func):
             logging.error(f'insert_decorator_reverse: {error}')
 
     return inner
+
 
 @insert_decorator_reverse
 def update_insert_reverse(page_num: int, funcc, insert_funcc, name_of_data=None, extra_prefix=None, **kwargs):
@@ -124,6 +129,8 @@ def first_insert_reverse(page_num: int, funcc, insert_funcc, name_of_data=None, 
     records_to_insert = funcc(data=file_data, **kwargs)
     insert_funcc(records_to_insert)
     return True
+
+
 # функции
 @api_decorator
 def create_api(page_num: int, api_name: str, tokens):

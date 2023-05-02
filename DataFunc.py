@@ -184,7 +184,7 @@ def get_lead_record(data: json) -> list:
     logging.info('Подготовливаю строки для записи в базу')
     try:
         for lead in leads:
-            if (str(lead['pipeline_id']) not in archive_pipelines and str(lead['pipeline_id']) not in block_pipelines):
+            if str(lead['pipeline_id']) not in archive_pipelines and str(lead['pipeline_id']) not in block_pipelines:
                 lead_id = lead['id']
                 name = lead['name']
                 price = lead['price']

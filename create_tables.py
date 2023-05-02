@@ -5,4 +5,3 @@ import DB_Operations
 # DB_Operations.create_table_leads_table()
 # DB_Operations.create_table_custom_fields_table()
 # DB_Operations.create_table_utm()
-

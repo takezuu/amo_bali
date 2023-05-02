@@ -1,6 +1,6 @@
 import DataFunc
-from MainFunc import first_insert, create_dict, create_api, get_token, create_api_filter, \
-    pipeline_statuses_count, delete_all_files, update_token, first_insert_reverse
+from MainFunc import first_insert, create_dict, create_api, get_token, create_api_filter, delete_all_files, \
+    update_token, first_insert_reverse
 from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, update_leads_pipelines_status_date
 
 # авторизация и получение первого токена
@@ -11,7 +11,6 @@ create_api(api_name='users')
 create_api(api_name='pipelines')
 create_api(api_name='leads')
 create_api_filter(api_name='lead_status_changed')
-
 
 # создание словарей
 create_dict(funcc=DataFunc.get_users, dict_name='users', prefix='Dict')
@@ -32,7 +31,7 @@ first_insert(funcc=DataFunc.get_lead_record, insert_funcc=insert_leads, name_of_
 
 # запись дат перехода в статусы в leads_table
 first_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
-             name_of_data='lead_status_changed')
+                     name_of_data='lead_status_changed')
 
 # запись custom_fields
 first_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=insert_custom_fields,
@@ -41,7 +40,6 @@ first_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=insert_custom
 # запись utm_table
 first_insert(funcc=DataFunc.get_utm_record, insert_funcc=insert_utm_table,
              extra_prefix='Dict', name_of_data='utm')
-
 
 # удаляет созданные файлы
 delete_all_files()

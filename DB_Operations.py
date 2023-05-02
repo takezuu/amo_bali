@@ -1,8 +1,10 @@
 import psycopg2
 from pw import DataBase
 import logging
+
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                     filename='example.log', encoding='utf-8', level=logging.DEBUG)
+
 
 def db_decorator(func):
     def inner(records_to_insert):
@@ -295,7 +297,8 @@ def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
                 Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
                 Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
                 Партнер_Агент, Проект, Язык) \
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
@@ -422,7 +425,8 @@ def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
                 Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
                 Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
                 Партнер_Агент, Проект, Язык) \
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET
                 Был_в_Новая_заявка = EXCLUDED.Был_в_Новая_заявка,
@@ -491,7 +495,8 @@ def update_utm_table(records_to_insert: list, connection, cursor) -> None:
                 utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET
-                fbclid = EXCLUDED.fbclid, yclid = EXCLUDED.yclid, gclid = EXCLUDED.gclid, gclientid = EXCLUDED.gclientid, 
+                fbclid = EXCLUDED.fbclid, yclid = EXCLUDED.yclid, gclid = EXCLUDED.gclid, 
+                gclientid = EXCLUDED.gclientid, 
                 utm_from = EXCLUDED.utm_from, utm_source = EXCLUDED.utm_source, utm_medium = EXCLUDED.utm_medium,
                 utm_campaign = EXCLUDED.utm_campaign, utm_term = EXCLUDED.utm_term, utm_content = EXCLUDED.utm_content, 
                 utm_referrer = EXCLUDED.utm_referrer, ym_uid = EXCLUDED.ym_uid, ym_counter = EXCLUDED.ym_counter, 
