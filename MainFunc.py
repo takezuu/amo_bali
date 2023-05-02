@@ -194,7 +194,7 @@ def update_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_p
 
 
 @api_decorator
-def get_deleated_lead(page_num: int, api_name, tokens):
+def get_deleated_lead(page_num: int, tokens):
     try:
         logging.info('Работает get_deleated_lead')
         deleted_leads = api_requests.api_get_deleted_leads(tokens=tokens, page_num=page_num)
@@ -206,7 +206,7 @@ def get_deleated_lead(page_num: int, api_name, tokens):
 
 
 @delete_decorator
-def delete_deleted_leads(page_num: int, funcc, delete_funcc, name_of_data=None, extra_prefix=None, **kwargs):
+def delete_deleted_leads(page_num: int, funcc, delete_funcc, name_of_data=None, **kwargs):
     try:
         logging.info('Работает delete_deleted_leads')
         file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data)
@@ -223,7 +223,7 @@ def get_token():
     try:
         logging.info('Получаю первый токен')
         new_tokens = authorization()
-        DataFunc.write_tokens(tokens=new_tokens)
+        # DataFunc.write_tokens(tokens=new_tokens)
         DB_Operations.insert_tk_table(records_to_insert=new_tokens)
         logging.info('Got access_token')
     except Exception as error:

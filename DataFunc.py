@@ -171,8 +171,13 @@ def convert_task_time(closest_task_at):
         logging.error(f'convert_task_time: {error}')
 
 
-def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group_dict, archive_pipelines) -> list:
+def get_lead_record(data: json) -> list:
     """Подготовливает строки для записи в базу"""
+    pipelines_dict = read_data_file(name_of_data='pipelines', extra_prefix='Dict')
+    statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
+    users_dict = read_data_file(name_of_data='users', extra_prefix='Dict')
+    group_dict = read_data_file(name_of_data='group', extra_prefix='Dict')
+    archive_pipelines = read_data_file(name_of_data='archive_pipelines', extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     records_to_insert = []
     leads = data['_embedded']['leads']
@@ -207,9 +212,13 @@ def get_lead_record(data: json, pipelines_dict, statuses_dict, users_dict, group
         logging.error(f'get_lead_record: {error}')
 
 
-def get_lead_update_record(data: json, pipelines_dict, statuses_dict, users_dict, group_dict,
-                           archive_pipelines) -> list:
+def get_lead_update_record(data: json) -> list:
     """Подготовливает строки для записи в базу"""
+    pipelines_dict = read_data_file(name_of_data='pipelines', extra_prefix='Dict')
+    statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
+    users_dict = read_data_file(name_of_data='users', extra_prefix='Dict')
+    group_dict = read_data_file(name_of_data='group', extra_prefix='Dict')
+    archive_pipelines = read_data_file(name_of_data='archive_pipelines', extra_prefix='Dict')
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     records_to_insert = []
     leads = data['_embedded']['leads']

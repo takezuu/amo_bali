@@ -1,6 +1,6 @@
 import DataFunc
-from MainFunc import create_dict, create_api, update_insert, update_token, create_api_filter, pipeline_statuses_count, \
-    delete_all_files, get_token, get_deleated_lead, delete_deleted_leads, update_insert_reverse
+from MainFunc import create_dict, create_api, update_insert, update_token, create_api_filter, \
+    delete_all_files, get_deleated_lead, delete_deleted_leads, update_insert_reverse
 from DB_Operations import update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date, \
     delete_leads
 
@@ -29,21 +29,12 @@ create_dict(funcc=DataFunc.get_utm_dict, dict_name='leads_custom_fields', second
             extra_prefix='Dict')
 
 # запись в базу
-# подготовка словарей для записи leads_table
-pipelines_dict = DataFunc.read_data_file(name_of_data='pipelines', extra_prefix='Dict')
-archive_pipelines = DataFunc.read_data_file(name_of_data='archive_pipelines', extra_prefix='Dict')
-statuses_dict = DataFunc.read_data_file(name_of_data='statuses', extra_prefix='Dict')
-users_dict = DataFunc.read_data_file(name_of_data='users', extra_prefix='Dict')
-group_dict1 = DataFunc.read_data_file(name_of_data='group', extra_prefix='Dict')
-
 # обновление leads_table
-update_insert(funcc=DataFunc.get_lead_update_record, insert_funcc=update_leads, name_of_data='leads',
-              pipelines_dict=pipelines_dict, archive_pipelines=archive_pipelines, statuses_dict=statuses_dict,
-              users_dict=users_dict, group_dict=group_dict1)
+update_insert(funcc=DataFunc.get_lead_update_record, insert_funcc=update_leads, name_of_data='leads')
 
 # запись дат перехода в статусы в leads_table
 update_insert_reverse(funcc=DataFunc.get_lead_status_changed_update, insert_funcc=update_leads_pipelines_status_date,
-              name_of_data='lead_status_changed')
+                      name_of_data='lead_status_changed')
 
 # запись custom_fields
 update_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=update_custom_fields,
@@ -56,7 +47,5 @@ update_insert(funcc=DataFunc.get_utm_record, insert_funcc=update_utm_table,
 get_deleated_lead(api_name='delete')
 delete_deleted_leads(name_of_data='Deleted_leads', funcc=DataFunc.get_id_deleted_leads, delete_funcc=delete_leads)
 
-
 # удаляет созданные файлы
 delete_all_files()
-
