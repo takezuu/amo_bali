@@ -2,15 +2,17 @@ import json
 import datetime
 import logging
 
+from paths import my_log, my_f
+
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                    filename='/root/amo_bali/analytic.log', encoding='utf-8', level=logging.DEBUG)
+                    filename=my_log, encoding='utf-8', level=logging.DEBUG)
 
 
 def write_tokens(tokens: dict) -> None:
     """Записывает токены в файл"""
     try:
         logging.info('Записываю токены в файл')
-        with open('/root/amo_bali/tokens', 'w', encoding='utf-8') as file:
+        with open(my_f +'tokens', 'w', encoding='utf-8') as file:
             json.dump(tokens, file, indent=4)
     except Exception as error:
         logging.error(f'write_tokens: {error}')
@@ -27,7 +29,7 @@ def write_data(data, name_of_data: str, page_num=None, prefix=None, second_dict_
         else:
             file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
 
-        with open('/root/amo_bali/' + file_path, 'w', encoding='utf-8') as file:
+        with open(my_f + file_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, sort_keys=False, ensure_ascii=False, indent=4)
             logging.info(f'Json получен {page_num} {name_of_data}')
     except Exception as error:
@@ -38,7 +40,7 @@ def read_token() -> json:
     """Читает токен из файла"""
     try:
         logging.info('Читаю токен из файла')
-        with open('/root/amo_bali/tokens', 'r', encoding='utf-8') as file:
+        with open(my_f +'tokens', 'r', encoding='utf-8') as file:
             return json.load(file)
     except Exception as error:
         logging.error(f'read_token: {error}')
@@ -50,7 +52,7 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
         file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
     else:
         file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
-    with open('/root/amo_bali/' + file_path, 'r', encoding='utf-8') as file:
+    with open(my_f + file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
 
