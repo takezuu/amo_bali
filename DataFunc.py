@@ -624,10 +624,11 @@ def get_lost_stage(data):
         final_lost_stage = []
         for lead in lost_stage_list:
             pipeline = lead[0][0]
-            pipeline = statuses_dict[f'{pipeline}']
-            for stage in pipeline:
-                if stage[0] == lead[0][1]:
-                    final_lost_stage.append((stage[1], lead[1]))
+            if pipeline not in [5298025, 6229330, 5297782, 6245694, 6181218, 6437666, 6693290, 62293]:
+                pipeline = statuses_dict[f'{pipeline}']
+                for stage in pipeline:
+                    if stage[0] == lead[0][1]:
+                        final_lost_stage.append((stage[1], lead[1]))
 
         return final_lost_stage
 
