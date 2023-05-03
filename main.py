@@ -1,7 +1,8 @@
 import DataFunc
 from MainFunc import first_insert, create_dict, create_api, get_token, create_api_filter, delete_all_files, \
     update_token, first_insert_reverse
-from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, update_leads_pipelines_status_date
+from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, update_leads_pipelines_status_date, \
+    update_lost_stage
 
 # авторизация и получение первого токена
 get_token()
@@ -32,6 +33,9 @@ first_insert(funcc=DataFunc.get_lead_record, insert_funcc=insert_leads, name_of_
 # запись дат перехода в статусы в leads_table
 first_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
                      name_of_data='lead_status_changed')
+
+# запись lost_stage в leads_table
+first_insert(funcc=DataFunc.get_lost_stage, insert_funcc=update_lost_stage, name_of_data='lead_status_changed')
 
 # запись custom_fields
 first_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=insert_custom_fields,

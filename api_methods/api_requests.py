@@ -3,7 +3,7 @@ import requests
 from pw import UserData
 import logging
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                    filename='example.log', encoding='utf-8', level=logging.DEBUG)
+                    filename='/root/amo_bali/analytic.log', encoding='utf-8', level=logging.DEBUG)
 
 def api_get_request(tokens: tuple, api_name: str, page_num: int = 1, ) -> json:
     """Возвращает json запрошенного api"""

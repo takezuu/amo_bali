@@ -3,7 +3,7 @@ from pw import DataBase
 import logging
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                    filename='example.log', encoding='utf-8', level=logging.DEBUG)
+                    filename='/root/amo_bali/analytic.log', encoding='utf-8', level=logging.DEBUG)
 
 
 def db_decorator(func):
@@ -295,9 +295,9 @@ def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
                 Дата_Встреча_проведена, Дата_Ожидаем_предоплату, Дата_Получена_предоплата, Дата_Реквизиты_получены, 
                 Дата_Договор_отправлен_юристу, Дата_Договор_отправлен_клиенту, Дата_Договор_подписан, 
                 Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
-                Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
+                Источник_заявки, Не_взята, Скорость_взятия, Причина_отказа, Отказ_подробно, 
                 Партнер_Агент, Проект, Язык) \
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
         cursor.executemany(insert_query, records_to_insert)
@@ -423,10 +423,10 @@ def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
                 Дата_Встреча_проведена, Дата_Ожидаем_предоплату, Дата_Получена_предоплата, Дата_Реквизиты_получены, 
                 Дата_Договор_отправлен_юристу, Дата_Договор_отправлен_клиенту, Дата_Договор_подписан, 
                 Дата_Первый_платеж, Дата_Второй_платеж, Дата_Третий_платеж, Дата_Выиграно, Дата_Проиграно, 
-                Источник_заявки, Не_взята, Скорость_взятия, Этап_отказа, Причина_отказа, Отказ_подробно, 
+                Источник_заявки, Не_взята, Скорость_взятия, Причина_отказа, Отказ_подробно, 
                 Партнер_Агент, Проект, Язык) \
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
-                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET
                 Был_в_Новая_заявка = EXCLUDED.Был_в_Новая_заявка,
@@ -472,7 +472,6 @@ def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
                 Источник_заявки = EXCLUDED.Источник_заявки,
                 Не_взята = EXCLUDED.Не_взята,
                 Скорость_взятия = EXCLUDED.Скорость_взятия,
-                Этап_отказа = EXCLUDED.Этап_отказа,
                 Причина_отказа = EXCLUDED.Причина_отказа,
                 Отказ_подробно = EXCLUDED.Отказ_подробно,
                 Партнер_Агент = EXCLUDED.Партнер_Агент,
@@ -505,6 +504,18 @@ def update_utm_table(records_to_insert: list, connection, cursor) -> None:
         connection.commit()
     except Exception as error:
         logging.error(f'update_utm_table: {error}')
+
+
+@db_decorator
+def update_lost_stage(records_to_insert: list, connection, cursor) -> None:
+    """Записывает проигранный этап в сделку"""
+    try:
+        logging.info(f'update lost stage in lead_table {len(records_to_insert)}')
+        insert_query = """UPDATE leads_table SET LOST_STAGE = %s WHERE ID = %s"""
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        logging.error(f'insert_lost_stage: {error}')
 
 
 @db_select_decorator

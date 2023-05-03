@@ -3,14 +3,14 @@ import datetime
 import logging
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                    filename='example.log', encoding='utf-8', level=logging.DEBUG)
+                    filename='/root/amo_bali/analytic.log', encoding='utf-8', level=logging.DEBUG)
 
 
 def write_tokens(tokens: dict) -> None:
     """Записывает токены в файл"""
     try:
         logging.info('Записываю токены в файл')
-        with open('tokens', 'w', encoding='utf-8') as file:
+        with open('/root/amo_bali/tokens', 'w', encoding='utf-8') as file:
             json.dump(tokens, file, indent=4)
     except Exception as error:
         logging.error(f'write_tokens: {error}')
@@ -27,7 +27,7 @@ def write_data(data, name_of_data: str, page_num=None, prefix=None, second_dict_
         else:
             file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
 
-        with open(file_path, 'w', encoding='utf-8') as file:
+        with open('/root/amo_bali/' + file_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, sort_keys=False, ensure_ascii=False, indent=4)
             logging.info(f'Json получен {page_num} {name_of_data}')
     except Exception as error:
@@ -38,7 +38,7 @@ def read_token() -> json:
     """Читает токен из файла"""
     try:
         logging.info('Читаю токен из файла')
-        with open('tokens', 'r', encoding='utf-8') as file:
+        with open('/root/amo_bali/tokens', 'r', encoding='utf-8') as file:
             return json.load(file)
     except Exception as error:
         logging.error(f'read_token: {error}')
@@ -50,7 +50,7 @@ def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
         file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
     else:
         file_path = f'{name_of_data}'.capitalize() + '/' f'{name_of_data}' + f'{page_num}'
-    with open(file_path, 'r', encoding='utf-8') as file:
+    with open('/root/amo_bali/' + file_path, 'r', encoding='utf-8') as file:
         return json.load(file)
 
 
@@ -348,7 +348,7 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
                      'Дата Договор отправлен юристу': 33, 'Дата Договор отправлен клиенту': 34,
                      'Дата Договор подписан': 35, 'Дата Первый платеж': 36, 'Дата Второй платеж': 37,
                      'Дата Третий платеж': 38, 'Дата Выиграно': 39, 'Дата Проиграно': 40, 'Источник заявки': 41,
-                     'Не взята': 42, 'Скорость взятия': 43, 'Этап отказа': 44, 'Причина отказа': 45,
+                     'Не взята': 42, 'Скорость взятия': 43, 'Причина отказа': 45,
                      'Отказ подробно': 46, 'Партнер | Агент': 47, 'Проект': 48, 'Язык': 49}
     leads_dict = leads_custom_fields_dict
     try:
@@ -482,7 +482,6 @@ def get_custom_fields_record(data: json) -> list:
             not_taken = convert_item(lead=lead, custom_fields_dict=data, need_item='42')
             take_speed = convert_item(lead=lead, custom_fields_dict=data, need_item='43')
             take_speed = convert_time_with_time(take_speed)
-            failure_stage = convert_item(lead=lead, custom_fields_dict=data, need_item='44')
             rejection_reason = convert_item(lead=lead, custom_fields_dict=data, need_item='45')
             failure_detail = convert_item(lead=lead, custom_fields_dict=data, need_item='46')
             partner_agent = convert_item(lead=lead, custom_fields_dict=data, need_item='47')
@@ -501,8 +500,8 @@ def get_custom_fields_record(data: json) -> list:
                 date_appointed, date_meeting_canceled, date_meeting_held, date_awaiting_payment,
                 date_prepayment_received, date_details_received, date_contract_sent_to_lawyer,
                 date_contract_sent_to_customer, date_contract_signed, date_first_payment, date_second_payment,
-                date_third_payment, date_won, date_lost, application_source, not_taken, take_speed,
-                failure_stage, rejection_reason, failure_detail, partner_agent, project, language)
+                date_third_payment, date_won, date_lost, application_source, not_taken, take_speed, rejection_reason,
+                failure_detail, partner_agent, project, language)
 
             records_to_insert.append(record_to_insert)
         return records_to_insert
@@ -605,3 +604,55 @@ def get_id_deleted_leads(data):
         return delete_list
     except Exception as error:
         logging.error(f'get_id_deleted_leads: {error}')
+
+
+def get_lost_stage(data):
+    """Возвращает список этап проигрыша + ид"""
+    try:
+        archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
+        statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
+        lost_stage_list = [[(lead['value_before'][0]['lead_status']['pipeline_id'],
+                             lead['value_before'][0]['lead_status']['id']), lead['entity_id']]
+                           for lead in data['_embedded']['events'] if
+                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines
+                            and lead['value_after'][0]['lead_status']['id'] == 143)]
+
+        final_lost_stage = []
+        for lead in lost_stage_list:
+            pipeline = lead[0][0]
+            pipeline = statuses_dict[f'{pipeline}']
+            for stage in pipeline:
+                if stage[0] == lead[0][1]:
+                    final_lost_stage.append((stage[1], lead[1]))
+
+        return final_lost_stage
+
+    except Exception as error:
+        print(f'get_lost_stage: {error}')
+
+
+def get_lost_stage_update(data):
+    """Возвращает список этап проигрыша + ид"""
+    try:
+        archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
+        statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
+        lost_stage_list = [[(lead['value_before'][0]['lead_status']['pipeline_id'],
+                             lead['value_before'][0]['lead_status']['id']), lead['entity_id']]
+                           for lead in data['_embedded']['events'] if
+                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines
+                            and lead['value_after'][0]['lead_status']['id'] == 143) and
+                           (convert_time(lead['created_at']) >= datetime.date.today() or
+                            convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]
+
+        final_lost_stage = []
+        for lead in lost_stage_list:
+            pipeline = lead[0][0]
+            pipeline = statuses_dict[f'{pipeline}']
+            for stage in pipeline:
+                if stage[0] == lead[0][1]:
+                    final_lost_stage.append((stage[1], lead[1]))
+
+        return final_lost_stage
+
+    except Exception as error:
+        print(f'get_lost_stage_update: {error}')
