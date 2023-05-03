@@ -395,6 +395,29 @@ def update_leads(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
+def full_update_leads(records_to_insert: list, connection, cursor) -> None:
+    """Обновляет сделки в базе"""
+    try:
+        logging.info(f'full_update_leads {len(records_to_insert)}')
+        update_query = """INSERT INTO leads_table (
+                ID, Название, Бюджет, Состояние, Ответственный, Группа, Воронка, Этап_воронки, Дата_перехода_на_этап,
+                Дата_создания, Дата_изменения, Дата_закрытия,
+                Ближайшая_задача, Наличие_задачи, Просрочена_задача) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (id) DO UPDATE SET
+                Название = EXCLUDED.Название, Бюджет = EXCLUDED.Бюджет, Состояние = EXCLUDED.Состояние, 
+                Ответственный = EXCLUDED.Ответственный, Группа = EXCLUDED.Группа, Воронка = EXCLUDED.Воронка, 
+                Этап_воронки = EXCLUDED.Этап_воронки, Дата_перехода_на_этап = EXCLUDED.Дата_перехода_на_этап,
+                Дата_создания = EXCLUDED.Дата_создания, Дата_изменения = EXCLUDED.Дата_изменения, 
+                Дата_закрытия = EXCLUDED.Дата_закрытия, Ближайшая_задача = EXCLUDED.Ближайшая_задача, 
+                Наличие_задачи = EXCLUDED.Наличие_задачи, Просрочена_задача = EXCLUDED.Просрочена_задача"""
+        cursor.executemany(update_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        logging.error(f'full_update_leads: {error}')
+
+
+@db_decorator
 def update_leads_pipelines_status_date(records_to_insert: list, connection, cursor) -> None:
     """Записывает дату перехода в этап воронки"""
     try:

@@ -7,7 +7,7 @@ from Auth import get_refresh_token, authorization
 from api_methods import api_requests
 import logging
 
-from paths import my_log
+from paths import my_log, my_f
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                     filename=my_log, encoding='utf-8', level=logging.DEBUG)
@@ -279,7 +279,7 @@ def delete_all_files():
         dirs = ['Leads/', 'Users/', 'Pipelines/', 'Lead_status_changed/', 'Dict/', 'Deleted_leads/']
 
         for dir in dirs:
-            for f in os.listdir(dir):
+            for f in os.listdir(my_f +dir):
                 logging.info(f'delete {f}')
                 if f != 'group_dict1':
                     if f != 'block_pipelines_dict1':

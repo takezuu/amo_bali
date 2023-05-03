@@ -1,7 +1,7 @@
 import DataFunc
 from MainFunc import create_dict, create_api, update_insert, update_token, create_api_filter, \
     delete_all_files, get_deleated_lead, delete_deleted_leads, update_insert_reverse
-from DB_Operations import update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date, \
+from DB_Operations import full_update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date, \
     delete_leads, update_lost_stage
 
 # авторизация и получение нового токена
@@ -30,7 +30,7 @@ create_dict(funcc=DataFunc.get_utm_dict, dict_name='leads_custom_fields', second
 
 # запись в базу
 # обновление leads_table
-update_insert(funcc=DataFunc.get_lead_record, insert_funcc=update_leads, name_of_data='leads')
+update_insert(funcc=DataFunc.get_lead_record, insert_funcc=full_update_leads, name_of_data='leads')
 
 # запись дат перехода в статусы в leads_table
 update_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
