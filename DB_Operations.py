@@ -22,6 +22,8 @@ def db_decorator(func):
 
                 connection.close()
                 logging.info('Connection close!')
+        except TypeError:
+            logging.info(f'db_decorator: пришел None')
         except Exception as error:
             logging.error(f'db_decorator: {error}')
 

@@ -275,7 +275,7 @@ def get_pipelines(pipelines: json) -> dict:
         pipelines = pipelines['_embedded']['pipelines']
         logging.info('Создаю словарь воронок')
         return {pipeline['id']: pipeline['name'] for pipeline in pipelines if not pipeline['is_archive']
-                and pipeline['id'] not in block_pipelines}
+                and str(pipeline['id']) not in block_pipelines}
     except Exception as error:
         logging.error(f'get_pipelines: {error}')
 
@@ -548,8 +548,8 @@ def get_lead_status_changed(data) -> list:
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
         status_changed = [[lead['entity_id'], lead['created_at']] for lead in data['_embedded']['events'] if
-                          (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines and
-                           lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines)]
+                          (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
+                           str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines)]
 
         final_status_changed = {}
         for status in status_changed:
@@ -574,8 +574,8 @@ def get_lead_status_changed_update(data) -> list:
     block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
     try:
         status_changed = [[lead['created_at'], lead['entity_id']] for lead in data['_embedded']['events'] if
-                          (lead['value_after'][0]['lead_status']['pipeline_id'] not in archive_pipelines and
-                           lead['value_after'][0]['lead_status']['pipeline_id'] not in block_pipelines) and
+                          (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
+                           str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines) and
                           (convert_time(lead['created_at']) >= datetime.date.today() or
                            convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]
 
@@ -613,10 +613,12 @@ def get_lost_stage(data):
     try:
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
+        block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         lost_stage_list = [[(lead['value_before'][0]['lead_status']['pipeline_id'],
                              lead['value_before'][0]['lead_status']['id']), lead['entity_id']]
                            for lead in data['_embedded']['events'] if
-                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines
+                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
+                            str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines
                             and lead['value_after'][0]['lead_status']['id'] == 143)]
 
         final_lost_stage = []
@@ -638,10 +640,12 @@ def get_lost_stage_update(data):
     try:
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
+        block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
         lost_stage_list = [[(lead['value_before'][0]['lead_status']['pipeline_id'],
                              lead['value_before'][0]['lead_status']['id']), lead['entity_id']]
                            for lead in data['_embedded']['events'] if
-                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines
+                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
+                            str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines
                             and lead['value_after'][0]['lead_status']['id'] == 143) and
                            (convert_time(lead['created_at']) >= datetime.date.today() or
                             convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]
