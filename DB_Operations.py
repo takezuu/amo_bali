@@ -511,11 +511,11 @@ def update_lost_stage(records_to_insert: list, connection, cursor) -> None:
     """Записывает проигранный этап в сделку"""
     try:
         logging.info(f'update lost stage in lead_table {len(records_to_insert)}')
-        insert_query = """UPDATE leads_table SET LOST_STAGE = %s WHERE ID = %s"""
+        insert_query = """UPDATE custom_fields_table SET Этап_отказа = %s WHERE ID = %s"""
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
-        logging.error(f'insert_lost_stage: {error}')
+        logging.error(f'update_lost_stage: {error}')
 
 
 @db_select_decorator

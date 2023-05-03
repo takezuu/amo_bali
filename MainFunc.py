@@ -201,7 +201,7 @@ def update_insert(page_num: int, funcc, insert_funcc, name_of_data=None, extra_p
 
 
 @api_decorator
-def get_deleated_lead(page_num: int, tokens):
+def get_deleated_lead(page_num: int, api_name, tokens):
     try:
         logging.info('Работает get_deleated_lead')
         deleted_leads = api_requests.api_get_deleted_leads(tokens=tokens, page_num=page_num)
@@ -245,7 +245,7 @@ def update_token():
         # tokens = DataFunc.read_token()
         # new_tokens = get_refresh_token(refresh_token=tokens['refresh_token'])
         new_tokens = get_refresh_token(refresh_token=tokens[1])
-        DataFunc.write_tokens(tokens=new_tokens)
+        #DataFunc.write_tokens(tokens=new_tokens)
         DB_Operations.insert_tk_table(records_to_insert=new_tokens)
         logging.info('Got new access_token')
     except Exception as error:

@@ -628,7 +628,7 @@ def get_lost_stage(data):
         return final_lost_stage
 
     except Exception as error:
-        print(f'get_lost_stage: {error}')
+        logging.error(f'get_lost_stage: {error}')
 
 
 def get_lost_stage_update(data):
@@ -655,4 +655,4 @@ def get_lost_stage_update(data):
         return final_lost_stage
 
     except Exception as error:
-        print(f'get_lost_stage_update: {error}')
+        logging.error(f'get_lost_stage_update: {error}')
