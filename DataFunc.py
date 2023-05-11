@@ -169,6 +169,9 @@ def convert_task_time(closest_task_at):
                 return 'No'
         else:
             return None
+    except AttributeError:
+        logging.info(f'возвращаю convert_task_time: {closest_task_at}')
+        return closest_task_at
     except Exception as error:
         logging.error(f'convert_task_time: {error}')
 
