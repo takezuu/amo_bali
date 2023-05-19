@@ -181,7 +181,6 @@ def delete_deleted_leads(page_num: int, funcc, delete_funcc, name_of_data: str =
     try:
         logging.info(f'Работает delete_deleted_leads, page {page_num}')
         file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data)
-        logging.info(f'page {page_num}')
     except FileNotFoundError:
         return False
     records_to_delete = funcc(data=file_data)

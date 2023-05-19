@@ -95,7 +95,7 @@ def db_delete_decorator(func):
 
 def db_delete_leads_decorator(func):
     """Декарот для удаления сделок"""
-    def inner():
+    def inner(delete_list):
         try:
             logging.info('Запускаю db_delete_decorator_new')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
@@ -103,7 +103,7 @@ def db_delete_leads_decorator(func):
             cursor = connection.cursor()
             logging.info('Connection success!')
 
-            func(connection, cursor)
+            func(connection, cursor, delete_list)
 
             connection.close()
             logging.info('Connection close!')
