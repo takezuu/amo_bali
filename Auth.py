@@ -20,6 +20,7 @@ def authorization() -> json:
     }
 
     url_for_token = f'{UserData.CLIENT_URL}/oauth2/access_token'
+
     try:
         logging.info('Делаю post запрос на первую авторизацию')
         request = requests.post(url_for_token, data=data)
@@ -37,6 +38,7 @@ def get_refresh_token(refresh_token: str) -> json:
             'redirect_uri': f'{UserData.URI}'}
 
     url_for_token = f'{UserData.CLIENT_URL}/oauth2/access_token'
+
     try:
         logging.info('Делаю post запрос для получения нового токена')
         request = requests.post(url_for_token, data=data)

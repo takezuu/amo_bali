@@ -1,12 +1,11 @@
 import DataFunc
 from MainFunc import first_insert, create_dict, create_api, get_token, create_api_filter, delete_all_files, \
-    update_token, first_insert_reverse
+    first_insert_reverse
 from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, update_leads_pipelines_status_date, \
     update_lost_stage
 
 # авторизация и получение первого токена
 get_token()
-# update_token()
 # запрос файлов из апи
 create_api(api_name='users')
 create_api(api_name='pipelines')

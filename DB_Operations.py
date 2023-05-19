@@ -9,6 +9,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m
 
 
 def db_decorator(func):
+    """Декоратор для записи и подключения к базе"""
     def inner(records_to_insert):
         try:
             if len(records_to_insert) > 0:
@@ -18,7 +19,8 @@ def db_decorator(func):
                                               host=DataBase.HOST, port=DataBase.PORT)
                 cursor = connection.cursor()
                 logging.info('Connection success!')
-                func(records_to_insert, connection, cursor)
+
+                func(connection, cursor, records_to_insert)
 
                 connection.close()
                 logging.info('Connection close!')
@@ -31,6 +33,7 @@ def db_decorator(func):
 
 
 def db_create_decorator(func):
+    """Декоратор для создания сущностей в базе"""
     def inner():
         try:
             logging.info('Запускаю db_create_decorator')
@@ -38,6 +41,7 @@ def db_create_decorator(func):
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
             logging.info('Connection success!')
+
             func(connection, cursor)
 
             connection.close()
@@ -49,14 +53,17 @@ def db_create_decorator(func):
 
 
 def db_select_decorator(func):
-    def inner(*args):
+    """Декоратор для выбора из базы"""
+    def inner():
         try:
             logging.info('Запускаю db_select_decorator')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
             logging.info('Connection success!')
-            tokens = func(cursor, *args)
+
+            tokens = func(cursor)
+
             connection.close()
             logging.info('Connection close!')
             return tokens
@@ -67,6 +74,7 @@ def db_select_decorator(func):
 
 
 def db_delete_decorator(func):
+    """Декоратор для удаления из базы"""
     def inner(name_of_table):
         try:
             logging.info('Запускаю db_delete_decorator')
@@ -74,6 +82,7 @@ def db_delete_decorator(func):
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
             logging.info('Connection success!')
+
             func(connection, cursor, name_of_table)
 
             connection.close()
@@ -84,15 +93,17 @@ def db_delete_decorator(func):
     return inner
 
 
-def db_delete_decorator_new(func):
-    def inner(*args):
+def db_delete_leads_decorator(func):
+    """Декарот для удаления сделок"""
+    def inner():
         try:
             logging.info('Запускаю db_delete_decorator_new')
             connection = psycopg2.connect(database=DataBase.DATABASE, user=DataBase.USER, password=DataBase.PASSWORD,
                                           host=DataBase.HOST, port=DataBase.PORT)
             cursor = connection.cursor()
             logging.info('Connection success!')
-            func(connection, cursor, *args)
+
+            func(connection, cursor)
 
             connection.close()
             logging.info('Connection close!')
@@ -224,8 +235,8 @@ def create_table_utm(connection, cursor) -> None:
 
 
 @db_create_decorator
-def create_pipeline_table(connection, cursor) -> None:
-    """Cоздает таблицу utm меток"""
+def create_table_pipeline(connection, cursor) -> None:
+    """Cоздает таблицу воронок"""
     try:
         logging.info('create create_pipeline_table')
         create_query = """CREATE TABLE pipeline_table(
@@ -247,7 +258,7 @@ def create_pipeline_table(connection, cursor) -> None:
         connection.commit()
         logging.info('CREATE TABLE PIPELINE')
     except Exception as error:
-        logging.error(f'create_pipeline_table: {error}')
+        logging.error(f'create_table_pipeline: {error}')
 
 
 @db_create_decorator
@@ -267,7 +278,7 @@ def create_table_tk(connection, cursor) -> None:
 
 
 @db_decorator
-def insert_leads(records_to_insert: list, connection, cursor) -> None:
+def insert_leads(connection, cursor, records_to_insert: list) -> None:
     """Записывает сделки в базу"""
     try:
         logging.info(f'insert_leads {len(records_to_insert)}')
@@ -283,7 +294,7 @@ def insert_leads(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
+def insert_custom_fields(connection, cursor, records_to_insert: list) -> None:
     """Записывает дополнительные поля в базу"""
     try:
         logging.info(f'insert_custom_fields {len(records_to_insert)}')
@@ -311,7 +322,7 @@ def insert_custom_fields(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
+def insert_utm_table(connection, cursor, records_to_insert: list) -> None:
     """Записывает utm поля в базу"""
     try:
         logging.info(f'insert_utm_table {len(records_to_insert)}')
@@ -326,7 +337,7 @@ def insert_utm_table(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def insert_tk_table(records_to_insert, connection, cursor) -> None:
+def insert_tk_table(connection, cursor, records_to_insert: dict) -> None:
     """Обновляет и записывает токены в базу"""
     try:
         logging.info('insert_tk_table')
@@ -343,7 +354,7 @@ def insert_tk_table(records_to_insert, connection, cursor) -> None:
 
 
 @db_decorator
-def insert_pipeline_table(records_to_insert: list, connection, cursor) -> None:
+def insert_pipeline_table(connection, cursor, records_to_insert: list) -> None:
     """Записывает сделки в базу"""
     try:
         logging.info(f'insert_pipeline_table {len(records_to_insert)}')
@@ -374,7 +385,7 @@ def insert_pipeline_table(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def update_leads(records_to_insert: list, connection, cursor) -> None:
+def update_leads(connection, cursor, records_to_insert: list) -> None:
     """Обновляет сделки в базе"""
     try:
         logging.info(f'update_leads {len(records_to_insert)}')
@@ -397,7 +408,7 @@ def update_leads(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def full_update_leads(records_to_insert: list, connection, cursor) -> None:
+def full_update_leads(connection, cursor, records_to_insert: list) -> None:
     """Обновляет сделки в базе"""
     try:
         logging.info(f'full_update_leads {len(records_to_insert)}')
@@ -420,7 +431,7 @@ def full_update_leads(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def update_leads_pipelines_status_date(records_to_insert: list, connection, cursor) -> None:
+def update_leads_pipelines_status_date(connection, cursor, records_to_insert: list) -> None:
     """Записывает дату перехода в этап воронки"""
     try:
         logging.info(f'update_leads_pipelines_status_date {len(records_to_insert)}')
@@ -434,7 +445,7 @@ def update_leads_pipelines_status_date(records_to_insert: list, connection, curs
 
 
 @db_decorator
-def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
+def update_custom_fields(connection, cursor, records_to_insert: list) -> None:
     """Обновляет дополнительные поля в базе"""
     try:
         logging.info(f'update_custom_fields {len(records_to_insert)}')
@@ -512,7 +523,7 @@ def update_custom_fields(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def update_utm_table(records_to_insert: list, connection, cursor) -> None:
+def update_utm_table(connection, cursor, records_to_insert: list) -> None:
     """Обновляет utm в базе"""
     try:
         logging.info(f'update_utm_table {len(records_to_insert)}')
@@ -534,7 +545,7 @@ def update_utm_table(records_to_insert: list, connection, cursor) -> None:
 
 
 @db_decorator
-def update_lost_stage(records_to_insert: list, connection, cursor) -> None:
+def update_lost_stage(connection, cursor, records_to_insert: list) -> None:
     """Записывает проигранный этап в сделку"""
     try:
         logging.info(f'update lost stage in lead_table {len(records_to_insert)}')
@@ -557,21 +568,8 @@ def read_tokens(cursor) -> tuple:
         logging.error(f'read_tokens: {error}')
 
 
-@db_select_decorator
-def select_pipeline_status_count(cursor, pipeline_status=None) -> tuple:
-    """Возвращает кол-во сделок на этапе"""
-    try:
-        logging.info('Забираю count')
-        select_query = f"""SELECT COUNT(pipeline_status) FROM leads_table WHERE pipeline= 'Продажи CRM | ClickCRM' 
-                        and pipeline_status= '{pipeline_status}'"""
-        cursor.execute(select_query)
-        return cursor.fetchone()
-    except Exception as error:
-        logging.error(f'select_pipeline_status_count: {error}')
-
-
 @db_delete_decorator
-def delete_from_table(name_of_table: str, connection, cursor) -> None:
+def delete_from_table(connection, cursor, name_of_table: str) -> None:
     """Удаляет все данные из таблицы"""
     try:
         logging.info(f'delete_from_table {name_of_table}')
@@ -596,7 +594,7 @@ def delete_table(connection, cursor, name_of_table: str) -> None:
         logging.error(f'delete_table: {error}')
 
 
-@db_delete_decorator_new
+@db_delete_leads_decorator
 def delete_leads(connection, cursor, delete_list) -> None:
     try:
         logging.info(f'delete_leads {len(delete_list)}')

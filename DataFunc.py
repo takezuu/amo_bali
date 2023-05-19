@@ -12,14 +12,14 @@ def write_tokens(tokens: dict) -> None:
     """Записывает токены в файл"""
     try:
         logging.info('Записываю токены в файл')
-        with open(my_f +'tokens', 'w', encoding='utf-8') as file:
+        with open(my_f + 'tokens', 'w', encoding='utf-8') as file:
             json.dump(tokens, file, indent=4)
     except Exception as error:
         logging.error(f'write_tokens: {error}')
 
 
-def write_data(data, name_of_data: str, page_num=None, prefix=None, second_dict_name=None) -> None:
-    """Записывает сделки в файл"""
+def write_data(data, name_of_data: str, page_num: int = None, prefix: str = None, second_dict_name: str = None) -> None:
+    """Записывает данные в файл"""
     try:
         logging.info('Записываю сделки в файл')
         if second_dict_name is not None:
@@ -31,7 +31,7 @@ def write_data(data, name_of_data: str, page_num=None, prefix=None, second_dict_
 
         with open(my_f + file_path, 'w', encoding='utf-8') as file:
             json.dump(data, file, sort_keys=False, ensure_ascii=False, indent=4)
-            logging.info(f'Json получен {page_num} {name_of_data}')
+            logging.info(f'Json получен страница: {page_num} данные: {name_of_data}')
     except Exception as error:
         logging.error(f'write_data: {error}')
 
@@ -40,13 +40,13 @@ def read_token() -> json:
     """Читает токен из файла"""
     try:
         logging.info('Читаю токен из файла')
-        with open(my_f +'tokens', 'r', encoding='utf-8') as file:
+        with open(my_f + 'tokens', 'r', encoding='utf-8') as file:
             return json.load(file)
     except Exception as error:
         logging.error(f'read_token: {error}')
 
 
-def read_data_file(name_of_data: str, page_num=1, extra_prefix=None) -> json:
+def read_data_file(name_of_data: str, page_num: int = 1, extra_prefix: str = None) -> json:
     """Читает файл"""
     if extra_prefix is not None:
         file_path = f'{extra_prefix}'.capitalize() + '/' f'{name_of_data}' + '_dict' f'{page_num}'
@@ -68,8 +68,8 @@ def check_next_api_page(file_data: json) -> bool:
         logging.error(f'check_next_api_page: {error}')
 
 
-def convert_time(unix_time: int) -> datetime:
-    """Конвертирует время из unix в обычный формат"""
+def convert_unix_to_date(unix_time: int) -> datetime or None:
+    """Конвертирует время из unix в обычный формат возвращает None либо дату"""
     try:
         time = datetime.datetime.fromtimestamp(unix_time).date()
     except TypeError:
@@ -80,8 +80,8 @@ def convert_time(unix_time: int) -> datetime:
         return time
 
 
-def convert_time_with_time(unix_time: int) -> datetime:
-    """Конвертирует время из unix в обычный формат"""
+def convert_unix_to_date_time(unix_time: int) -> datetime or None:
+    """Конвертирует время из unix в обычный формат возвращает None или дату и время"""
     try:
         time = datetime.datetime.fromtimestamp(unix_time)
     except TypeError:
@@ -103,8 +103,8 @@ def convert_group_id(group_id: int, group_dict) -> str:
         logging.error(f'convert_group_id: {error}')
 
 
-def convert_status_id(status_id: str, statuses_dict: dict, pipeline_id):
-    """Конвертирует status id в статус"""
+def convert_status_id(status_id: str, statuses_dict: dict, pipeline_id: int) -> str:
+    """Конвертирует status id в этап воронки'"""
     try:
         return list((status[1] for status in statuses_dict[str(pipeline_id)] if status[0] == status_id))[0]
     except Exception as error:
@@ -159,7 +159,7 @@ def convert_have_task(time) -> str:
         logging.error(f'convert_have_task: {error}')
 
 
-def convert_task_time(closest_task_at):
+def convert_task_time(closest_task_at) -> str or None or datetime:
     """Возвращает просрочена задача или нет"""
     try:
         if closest_task_at is not None:
@@ -199,10 +199,10 @@ def get_lead_record(data: json) -> list:
                 pipeline_status = convert_status_id(lead['status_id'], statuses_dict=statuses_dict,
                                                     pipeline_id=lead['pipeline_id'])
                 pipeline_date = None
-                created_at = convert_time(lead['created_at'])
-                updated_at = convert_time_with_time(lead['updated_at'])
-                closed_at = convert_time(lead['closed_at'])
-                closest_task_at = convert_time_with_time(lead['closest_task_at'])
+                created_at = convert_unix_to_date(lead['created_at'])
+                updated_at = convert_unix_to_date_time(lead['updated_at'])
+                closed_at = convert_unix_to_date(lead['closed_at'])
+                closest_task_at = convert_unix_to_date_time(lead['closest_task_at'])
                 lead_status = status_of_lead(lead['status_id'])
                 have_task = convert_have_task(closest_task_at)
                 overdue_task = convert_task_time(closest_task_at)
@@ -230,10 +230,10 @@ def get_lead_update_record(data: json) -> list:
     logging.info('Подготовливаю строки для записи в базу')
     try:
         for lead in leads:
-            if (str(lead['pipeline_id']) not in archive_pipelines and str(
-                    lead['pipeline_id']) not in block_pipelines) and (
-                    convert_time(lead['updated_at']) >= datetime.date.today() or convert_time(lead['updated_at']) == (
-                    datetime.date.today() - datetime.timedelta(days=1))):
+            if (str(lead['pipeline_id']) not in archive_pipelines and
+                str(lead['pipeline_id']) not in block_pipelines) and \
+                    (convert_unix_to_date(lead['updated_at']) >= datetime.date.today() or
+                     convert_unix_to_date(lead['updated_at']) == (datetime.date.today() - datetime.timedelta(days=1))):
                 lead_id = lead['id']
                 name = lead['name']
                 price = lead['price']
@@ -242,10 +242,10 @@ def get_lead_update_record(data: json) -> list:
                 pipeline = convert_pipeline_id(lead['pipeline_id'], pipelines_dict=pipelines_dict)
                 pipeline_status = convert_status_id(lead['status_id'], statuses_dict=statuses_dict,
                                                     pipeline_id=lead['pipeline_id'])
-                created_at = convert_time(lead['created_at'])
-                updated_at = convert_time(lead['updated_at'])
-                closed_at = convert_time(lead['closed_at'])
-                closest_task_at = convert_time(lead['closest_task_at'])
+                created_at = convert_unix_to_date(lead['created_at'])
+                updated_at = convert_unix_to_date(lead['updated_at'])
+                closed_at = convert_unix_to_date(lead['closed_at'])
+                closest_task_at = convert_unix_to_date(lead['closest_task_at'])
                 lead_status = status_of_lead(lead['status_id'])
                 have_task = convert_have_task(closest_task_at)
                 overdue_task = convert_task_time(closest_task_at)
@@ -327,12 +327,12 @@ def get_leads_custom_fields_dict_update(leads) -> dict:
         logging.info('Создаю словарь пользователей и доп.полей для обновления')
         return {
             lead['id']: [[field['field_name'], field['values'][0]['value']] for field in lead['custom_fields_values']]
-            for lead in leads if lead['custom_fields_values'] and ((str(lead['pipeline_id']) not in archive_pipelines
-                                                                    and str(lead['pipeline_id']) not in block_pipelines)
-                                                                   and (convert_time(
-                        lead['updated_at']) >= datetime.date.today() or convert_time(lead['updated_at']) ==
-                                                                        (datetime.date.today() - datetime.timedelta(
-                                                                            days=1))))}
+            for lead in leads if lead['custom_fields_values'] and
+                                 ((str(lead['pipeline_id']) not in archive_pipelines and
+                                   str(lead['pipeline_id']) not in block_pipelines) and
+                                  (convert_unix_to_date(lead['updated_at']) >= datetime.date.today() or
+                                   convert_unix_to_date(lead['updated_at']) ==
+                                   (datetime.date.today() - datetime.timedelta(days=1))))}
     except Exception as error:
         logging.error(f'get_leads_custom_fields_dict_update: {error}')
 
@@ -406,7 +406,7 @@ def convert_item(lead: str, custom_fields_dict: dict, need_item: str):
         logging.error(f'convert_item: {error}')
 
 
-def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str):
+def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str) -> str:
     """Конвертирует элемент и возвращает его"""
     try:
         for item in custom_fields_dict[lead]:
@@ -444,49 +444,49 @@ def get_custom_fields_record(data: json) -> list:
             was_in_won = convert_item(lead=lead, custom_fields_dict=data, need_item='19')
             was_in_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='20')
             date_new_application = convert_item(lead=lead, custom_fields_dict=data, need_item='21')
-            date_new_application = convert_time_with_time(date_new_application)
+            date_new_application = convert_unix_to_date_time(date_new_application)
             date_manager_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='22')
-            date_manager_appointed = convert_time_with_time(date_manager_appointed)
+            date_manager_appointed = convert_unix_to_date_time(date_manager_appointed)
             date_hired = convert_item(lead=lead, custom_fields_dict=data, need_item='23')
-            date_hired = convert_time_with_time(date_hired)
+            date_hired = convert_unix_to_date_time(date_hired)
             date_attempt_to_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='24')
-            date_attempt_to_contact = convert_time_with_time(date_attempt_to_contact)
+            date_attempt_to_contact = convert_unix_to_date_time(date_attempt_to_contact)
             date_presentation_sent = convert_item(lead=lead, custom_fields_dict=data, need_item='25')
-            date_presentation_sent = convert_time_with_time(date_presentation_sent)
+            date_presentation_sent = convert_unix_to_date_time(date_presentation_sent)
             date_contact_took_place = convert_item(lead=lead, custom_fields_dict=data, need_item='26')
-            date_contact_took_place = convert_time_with_time(date_contact_took_place)
+            date_contact_took_place = convert_unix_to_date_time(date_contact_took_place)
             date_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='27')
-            date_appointed = convert_time_with_time(date_appointed)
+            date_appointed = convert_unix_to_date_time(date_appointed)
             date_meeting_canceled = convert_item(lead=lead, custom_fields_dict=data, need_item='28')
-            date_meeting_canceled = convert_time_with_time(date_meeting_canceled)
+            date_meeting_canceled = convert_unix_to_date_time(date_meeting_canceled)
             date_meeting_held = convert_item(lead=lead, custom_fields_dict=data, need_item='29')
-            date_meeting_held = convert_time_with_time(date_meeting_held)
+            date_meeting_held = convert_unix_to_date_time(date_meeting_held)
             date_awaiting_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='30')
-            date_awaiting_payment = convert_time_with_time(date_awaiting_payment)
+            date_awaiting_payment = convert_unix_to_date_time(date_awaiting_payment)
             date_prepayment_received = convert_item(lead=lead, custom_fields_dict=data, need_item='31')
-            date_prepayment_received = convert_time_with_time(date_prepayment_received)
+            date_prepayment_received = convert_unix_to_date_time(date_prepayment_received)
             date_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='32')
-            date_details_received = convert_time_with_time(date_details_received)
+            date_details_received = convert_unix_to_date_time(date_details_received)
             date_contract_sent_to_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='33')
-            date_contract_sent_to_lawyer = convert_time_with_time(date_contract_sent_to_lawyer)
+            date_contract_sent_to_lawyer = convert_unix_to_date_time(date_contract_sent_to_lawyer)
             date_contract_sent_to_customer = convert_item(lead=lead, custom_fields_dict=data, need_item='34')
-            date_contract_sent_to_customer = convert_time_with_time(date_contract_sent_to_customer)
+            date_contract_sent_to_customer = convert_unix_to_date_time(date_contract_sent_to_customer)
             date_contract_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='35')
-            date_contract_signed = convert_time_with_time(date_contract_signed)
+            date_contract_signed = convert_unix_to_date_time(date_contract_signed)
             date_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='36')
-            date_first_payment = convert_time_with_time(date_first_payment)
+            date_first_payment = convert_unix_to_date_time(date_first_payment)
             date_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='37')
-            date_second_payment = convert_time_with_time(date_second_payment)
+            date_second_payment = convert_unix_to_date_time(date_second_payment)
             date_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='38')
-            date_third_payment = convert_time_with_time(date_third_payment)
+            date_third_payment = convert_unix_to_date_time(date_third_payment)
             date_won = convert_item(lead=lead, custom_fields_dict=data, need_item='39')
-            date_won = convert_time_with_time(date_won)
+            date_won = convert_unix_to_date_time(date_won)
             date_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='40')
-            date_lost = convert_time_with_time(date_lost)
+            date_lost = convert_unix_to_date_time(date_lost)
             application_source = convert_item(lead=lead, custom_fields_dict=data, need_item='41')
             not_taken = convert_item(lead=lead, custom_fields_dict=data, need_item='42')
             take_speed = convert_item(lead=lead, custom_fields_dict=data, need_item='43')
-            take_speed = convert_time_with_time(take_speed)
+            take_speed = convert_unix_to_date_time(take_speed)
             rejection_reason = convert_item(lead=lead, custom_fields_dict=data, need_item='45')
             failure_detail = convert_item(lead=lead, custom_fields_dict=data, need_item='46')
             partner_agent = convert_item(lead=lead, custom_fields_dict=data, need_item='47')
@@ -564,7 +564,7 @@ def get_lead_status_changed(data) -> list:
 
         records = []
         for k, v in final_status_changed.items():
-            records.append((convert_time(v), k))
+            records.append((convert_unix_to_date(v), k))
 
         return records
     except Exception as error:
@@ -579,8 +579,9 @@ def get_lead_status_changed_update(data) -> list:
         status_changed = [[lead['created_at'], lead['entity_id']] for lead in data['_embedded']['events'] if
                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
                            str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines) and
-                          (convert_time(lead['created_at']) >= datetime.date.today() or
-                           convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]
+                          (convert_unix_to_date(lead['created_at']) >= datetime.date.today() or
+                           convert_unix_to_date(lead['created_at']) == (
+                                   datetime.date.today() - datetime.timedelta(days=1)))]
 
         final_status_changed = {}
         for status in status_changed:
@@ -592,14 +593,14 @@ def get_lead_status_changed_update(data) -> list:
 
         records = []
         for k, v in final_status_changed.items():
-            records.append((convert_time(v), k))
+            records.append((convert_unix_to_date(v), k))
 
         return records
     except Exception as error:
         logging.error(f'get_lead_status_changed_update: {error}')
 
 
-def get_id_deleted_leads(data):
+def get_id_deleted_leads(data) -> list:
     """Возвращает список id для удаления"""
     delete_list = []
     try:
@@ -611,7 +612,7 @@ def get_id_deleted_leads(data):
         logging.error(f'get_id_deleted_leads: {error}')
 
 
-def get_lost_stage(data):
+def get_lost_stage(data) -> list:
     """Возвращает список этап проигрыша + ид"""
     try:
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
@@ -651,8 +652,9 @@ def get_lost_stage_update(data):
                            (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
                             str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines
                             and lead['value_after'][0]['lead_status']['id'] == 143) and
-                           (convert_time(lead['created_at']) >= datetime.date.today() or
-                            convert_time(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)))]
+                           (convert_unix_to_date(lead['created_at']) >= datetime.date.today() or
+                            convert_unix_to_date(lead['created_at']) == (
+                                    datetime.date.today() - datetime.timedelta(days=1)))]
 
         final_lost_stage = []
         for lead in lost_stage_list:

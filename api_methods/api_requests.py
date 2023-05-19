@@ -8,7 +8,8 @@ from paths import my_log
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                     filename=my_log, encoding='utf-8', level=logging.DEBUG)
 
-def api_get_request(tokens: tuple, api_name: str, page_num: int = 1, ) -> json:
+
+def api_get_request(tokens: tuple, api_name: str, page_num: int = 1) -> json:
     """Возвращает json запрошенного api"""
     access_token = tokens[0]
     api_call_header = {'Authorization': 'Bearer ' + access_token}
@@ -24,9 +25,7 @@ def api_get_request(tokens: tuple, api_name: str, page_num: int = 1, ) -> json:
         logging.error(f'api_get_request: {error}')
 
 
-
-
-def api_filter_get_request(tokens: tuple, api_name: str, page_num: int = 1, ) -> json:
+def api_filter_get_request(tokens: tuple, api_name: str, page_num: int = 1) -> json:
     """Возвращает json запрошенного api"""
     access_token = tokens[0]
     api_call_header = {'Authorization': 'Bearer ' + access_token}
@@ -40,9 +39,7 @@ def api_filter_get_request(tokens: tuple, api_name: str, page_num: int = 1, ) ->
         logging.error(f'api_filter_get_request: {error}')
 
 
-
-
-def api_get_deleted_leads(tokens: tuple, page_num):
+def api_get_deleted_leads(tokens: tuple, page_num: int = 1) -> json:
     """Возвращает json запрошенного api"""
     access_token = tokens[0]
     api_call_header = {'Authorization': 'Bearer ' + access_token}
