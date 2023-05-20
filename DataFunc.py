@@ -89,6 +89,7 @@ def convert_unix_to_date_time(unix_time: int) -> datetime or None:
     except Exception as error:
         logging.error(f'convert_time_with_time: {error}')
     else:
+        logging.info(f'Возвращаю convert_time_with_time: {time}')
         return time
 
 

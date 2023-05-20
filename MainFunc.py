@@ -54,7 +54,7 @@ def insert_decorator_reverse(func):
     def inner(*args, **kwargs):
         try:
             logging.info('Запускаю insert_decorator_reverse')
-            count_files = len(os.listdir('Lead_status_changed'))
+            count_files = len(os.listdir(my_f + 'Lead_status_changed'))
             logging.info(f'count files: {count_files}')
             page_num = count_files
             req = True
