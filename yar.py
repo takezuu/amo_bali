@@ -11,7 +11,7 @@ with open(my_log, 'r',  encoding='utf-8') as file:
         if 'ERROR' in row:
             file_errors.write(row)
             i += 1
-file_errors.write(str(datetime.datetime.now()) + f' {i}\n')
+file_errors.write(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + f' {i}\n')
 file_errors.close()
 
 if i == 0:

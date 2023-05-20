@@ -75,7 +75,7 @@ def convert_unix_to_date(unix_time: int) -> datetime or None:
     except TypeError:
         return None
     except Exception as error:
-        logging.info(f'convert_time: {error}')
+        logging.info(f'convert_unix_to_date: {error}')
     else:
         return time
 
@@ -87,9 +87,9 @@ def convert_unix_to_date_time(unix_time: int) -> datetime or None:
     except TypeError:
         return None
     except Exception as error:
-        logging.error(f'convert_time_with_time: {error}')
+        logging.error(f'convert_unix_to_date_time: {error}')
     else:
-        logging.info(f'Возвращаю convert_time_with_time: {time}')
+        logging.info(f'Возвращаю convert_unix_to_date_time: {time}')
         return time
 
 
@@ -160,7 +160,7 @@ def convert_have_task(time) -> str:
         logging.error(f'convert_have_task: {error}')
 
 
-def convert_task_time(closest_task_at) -> str or None or datetime:
+def convert_task_time(closest_task_at) -> str or None:
     """Возвращает просрочена задача или нет"""
     try:
         if closest_task_at is not None:
@@ -170,9 +170,6 @@ def convert_task_time(closest_task_at) -> str or None or datetime:
                 return 'No'
         else:
             return None
-    except AttributeError:
-        logging.info(f'возвращаю convert_task_time: {closest_task_at}')
-        return closest_task_at
     except Exception as error:
         logging.error(f'convert_task_time: {error}')
 
