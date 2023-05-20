@@ -15,7 +15,7 @@ if i == 0:
     file_errors.write('ошибок нет, Ярик доволен :)')
     file_errors.close()
 else:
-    file_errors.write(str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + f' {i}\n')
+    file_errors.write('кол-во ошибок на ' + str(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")) + f': {i}\n')
     file_errors.close()
 
 if i == 0:

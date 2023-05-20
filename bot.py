@@ -16,7 +16,7 @@ async def send_report(message: types.Message):
     file_errors = open(my_f + 'result_yar.txt', 'r', encoding='utf-8')
     report = file_errors.readlines()
 
-    await bot.send_message(chat_id=message.chat.id, text=f"Ярик говорит кол-во ошибок на {report[-1]}",
+    await bot.send_message(chat_id=message.chat.id, text=f"Ярик говорит {report[-1]}",
                             protect_content=True)
     file_errors.close()
 
