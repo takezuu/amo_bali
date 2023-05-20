@@ -243,7 +243,7 @@ def get_lead_update_record(data: json) -> list:
                 created_at = convert_unix_to_date(lead['created_at'])
                 updated_at = convert_unix_to_date(lead['updated_at'])
                 closed_at = convert_unix_to_date(lead['closed_at'])
-                closest_task_at = convert_unix_to_date(lead['closest_task_at'])
+                closest_task_at = convert_unix_to_date_time(lead['closest_task_at'])
                 lead_status = status_of_lead(lead['status_id'])
                 have_task = convert_have_task(closest_task_at)
                 overdue_task = convert_task_time(closest_task_at)
