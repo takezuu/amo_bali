@@ -127,10 +127,10 @@ def create_table_leads_table(connection, cursor) -> None:
         Группа TEXT,
         Воронка TEXT,
         Этап_воронки TEXT,
-        Дата_перехода_на_этап DATE,
-        Дата_создания DATE,
+        Дата_перехода_на_этап TIMESTAMP,
+        Дата_создания TIMESTAMP,
         Дата_изменения TIMESTAMP, 
-        Дата_закрытия DATE,
+        Дата_закрытия TIMESTAMP,
         Ближайшая_задача TIMESTAMP,
         Наличие_задачи TEXT,
         Просрочена_задача TEXT);"""

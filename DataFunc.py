@@ -187,29 +187,31 @@ def get_lead_record(data: json) -> list:
     logging.info('Подготовливаю строки для записи в базу')
     try:
         for lead in leads:
-            if str(lead['pipeline_id']) not in archive_pipelines and str(lead['pipeline_id']) not in block_pipelines:
-                lead_id = lead['id']
-                name = lead['name']
-                price = lead['price']
-                responsible = convert_responsible_id(lead['responsible_user_id'], users_dict=users_dict)
-                group_id = convert_group_id(lead['group_id'], group_dict=group_dict)
-                pipeline = convert_pipeline_id(lead['pipeline_id'], pipelines_dict=pipelines_dict)
-                pipeline_status = convert_status_id(lead['status_id'], statuses_dict=statuses_dict,
-                                                    pipeline_id=lead['pipeline_id'])
-                pipeline_date = None
-                created_at = convert_unix_to_date(lead['created_at'])
-                updated_at = convert_unix_to_date_time(lead['updated_at'])
-                closed_at = convert_unix_to_date(lead['closed_at'])
-                closest_task_at = convert_unix_to_date_time(lead['closest_task_at'])
-                lead_status = status_of_lead(lead['status_id'])
-                have_task = convert_have_task(closest_task_at)
-                overdue_task = convert_task_time(closest_task_at)
+            if str(lead['pipeline_id']) not in archive_pipelines:
+                if str(lead['pipeline_id']) not in block_pipelines:
+                    lead_id = lead['id']
+                    name = lead['name']
+                    price = lead['price']
+                    responsible = convert_responsible_id(lead['responsible_user_id'], users_dict=users_dict)
+                    group_id = convert_group_id(lead['group_id'], group_dict=group_dict)
+                    pipeline = convert_pipeline_id(lead['pipeline_id'], pipelines_dict=pipelines_dict)
+                    pipeline_status = convert_status_id(lead['status_id'], statuses_dict=statuses_dict,
+                                                        pipeline_id=lead['pipeline_id'])
+                    pipeline_date = None
+                    created_at = convert_unix_to_date_time(lead['created_at'])
+                    updated_at = convert_unix_to_date_time(lead['updated_at'])
+                    closed_at = convert_unix_to_date_time(lead['closed_at'])
+                    closest_task_at = convert_unix_to_date_time(lead['closest_task_at'])
+                    lead_status = status_of_lead(lead['status_id'])
+                    have_task = convert_have_task(closest_task_at)
+                    overdue_task = convert_task_time(closest_task_at)
 
-                record_to_insert = (
-                    lead_id, name, price, lead_status, responsible, group_id, pipeline, pipeline_status, pipeline_date,
-                    created_at, updated_at, closed_at, closest_task_at, have_task, overdue_task)
+                    record_to_insert = (lead_id, name, price, lead_status, responsible, group_id,
+                                        pipeline, pipeline_status, pipeline_date, created_at, updated_at,
+                                        closed_at, closest_task_at, have_task, overdue_task)
 
-                records_to_insert.append(record_to_insert)
+                    records_to_insert.append(record_to_insert)
+
         return records_to_insert
     except Exception as error:
         logging.error(f'get_lead_record: {error}')
@@ -217,6 +219,7 @@ def get_lead_record(data: json) -> list:
 
 def get_lead_update_record(data: json) -> list:
     """Подготовливает строки для записи в базу"""
+
     pipelines_dict = read_data_file(name_of_data='pipelines', extra_prefix='Dict')
     statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
     users_dict = read_data_file(name_of_data='users', extra_prefix='Dict')
@@ -228,31 +231,31 @@ def get_lead_update_record(data: json) -> list:
     logging.info('Подготовливаю строки для записи в базу')
     try:
         for lead in leads:
-            if (str(lead['pipeline_id']) not in archive_pipelines and
-                str(lead['pipeline_id']) not in block_pipelines) and \
-                    (convert_unix_to_date(lead['updated_at']) >= datetime.date.today() or
-                     convert_unix_to_date(lead['updated_at']) == (datetime.date.today() - datetime.timedelta(days=1))):
-                lead_id = lead['id']
-                name = lead['name']
-                price = lead['price']
-                responsible = convert_responsible_id(lead['responsible_user_id'], users_dict=users_dict)
-                group_id = convert_group_id(lead['group_id'], group_dict=group_dict)
-                pipeline = convert_pipeline_id(lead['pipeline_id'], pipelines_dict=pipelines_dict)
-                pipeline_status = convert_status_id(lead['status_id'], statuses_dict=statuses_dict,
-                                                    pipeline_id=lead['pipeline_id'])
-                created_at = convert_unix_to_date(lead['created_at'])
-                updated_at = convert_unix_to_date(lead['updated_at'])
-                closed_at = convert_unix_to_date(lead['closed_at'])
-                closest_task_at = convert_unix_to_date_time(lead['closest_task_at'])
-                lead_status = status_of_lead(lead['status_id'])
-                have_task = convert_have_task(closest_task_at)
-                overdue_task = convert_task_time(closest_task_at)
+            if (convert_unix_to_date(lead['updated_at']) >= datetime.date.today() or
+                    convert_unix_to_date(lead['updated_at']) == (datetime.date.today() - datetime.timedelta(days=1))):
+                if str(lead['pipeline_id']) not in archive_pipelines:
+                    if str(lead['pipeline_id']) not in block_pipelines:
+                        lead_id = lead['id']
+                        name = lead['name']
+                        price = lead['price']
+                        responsible = convert_responsible_id(lead['responsible_user_id'], users_dict=users_dict)
+                        group_id = convert_group_id(lead['group_id'], group_dict=group_dict)
+                        pipeline = convert_pipeline_id(lead['pipeline_id'], pipelines_dict=pipelines_dict)
+                        pipeline_status = convert_status_id(lead['status_id'], statuses_dict=statuses_dict,
+                                                            pipeline_id=lead['pipeline_id'])
+                        created_at = convert_unix_to_date_time(lead['created_at'])
+                        updated_at = convert_unix_to_date_time(lead['updated_at'])
+                        closed_at = convert_unix_to_date_time(lead['closed_at'])
+                        closest_task_at = convert_unix_to_date_time(lead['closest_task_at'])
+                        lead_status = status_of_lead(lead['status_id'])
+                        have_task = convert_have_task(closest_task_at)
+                        overdue_task = convert_task_time(closest_task_at)
 
-                record_to_insert = (
-                    lead_id, name, price, lead_status, responsible, group_id, pipeline, pipeline_status,
-                    created_at, updated_at, closed_at, closest_task_at, have_task, overdue_task)
+                        record_to_insert = (
+                            lead_id, name, price, lead_status, responsible, group_id, pipeline, pipeline_status,
+                            created_at, updated_at, closed_at, closest_task_at, have_task, overdue_task)
 
-                records_to_insert.append(record_to_insert)
+                        records_to_insert.append(record_to_insert)
         return records_to_insert
 
     except Exception as error:
@@ -562,7 +565,7 @@ def get_lead_status_changed(data) -> list:
 
         records = []
         for k, v in final_status_changed.items():
-            records.append((convert_unix_to_date(v), k))
+            records.append((convert_unix_to_date_time(v), k))
 
         return records
     except Exception as error:
@@ -591,7 +594,7 @@ def get_lead_status_changed_update(data) -> list:
 
         records = []
         for k, v in final_status_changed.items():
-            records.append((convert_unix_to_date(v), k))
+            records.append((convert_unix_to_date_time(v), k))
 
         return records
     except Exception as error:
@@ -616,21 +619,23 @@ def get_lost_stage(data) -> list:
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
-        lost_stage_list = [[(lead['value_before'][0]['lead_status']['pipeline_id'],
-                             lead['value_before'][0]['lead_status']['id']), lead['entity_id']]
-                           for lead in data['_embedded']['events'] if
-                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
-                            str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines
-                            and lead['value_after'][0]['lead_status']['id'] == 143)]
+        lost_stage_list = []
+        for lead in data['_embedded']['events']:
+            if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines:
+                if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines:
+                    if lead['value_after'][0]['lead_status']['id'] == 143:
+                        lost_stage_list.append([(lead['value_before'][0]['lead_status']['pipeline_id'],
+                             lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
+
+
 
         final_lost_stage = []
         for lead in lost_stage_list:
             pipeline = lead[0][0]
-            if pipeline not in [5298025, 6229330, 5297782, 6245694, 6181218, 6437666, 6693290, 62293]:
-                pipeline = statuses_dict[f'{pipeline}']
-                for stage in pipeline:
-                    if stage[0] == lead[0][1]:
-                        final_lost_stage.append((stage[1], lead[1]))
+            pipeline = statuses_dict[f'{pipeline}']
+            for stage in pipeline:
+                if stage[0] == lead[0][1]:
+                    final_lost_stage.append((stage[1], lead[1]))
 
         return final_lost_stage
 
@@ -644,15 +649,16 @@ def get_lost_stage_update(data):
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
         statuses_dict = read_data_file(name_of_data='statuses', extra_prefix='Dict')
         block_pipelines = read_data_file(name_of_data='block_pipelines', page_num=1, extra_prefix='Dict')
-        lost_stage_list = [[(lead['value_before'][0]['lead_status']['pipeline_id'],
-                             lead['value_before'][0]['lead_status']['id']), lead['entity_id']]
-                           for lead in data['_embedded']['events'] if
-                           (str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines and
-                            str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines
-                            and lead['value_after'][0]['lead_status']['id'] == 143) and
-                           (convert_unix_to_date(lead['created_at']) >= datetime.date.today() or
-                            convert_unix_to_date(lead['created_at']) == (
-                                    datetime.date.today() - datetime.timedelta(days=1)))]
+
+        lost_stage_list = []
+        for lead in data['_embedded']['events']:
+            if convert_unix_to_date(lead['created_at']) >= datetime.date.today() or \
+                    convert_unix_to_date(lead['created_at']) == (datetime.date.today() - datetime.timedelta(days=1)):
+                if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines:
+                    if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines:
+                        if lead['value_after'][0]['lead_status']['id'] == 143:
+                            lost_stage_list.append([(lead['value_before'][0]['lead_status']['pipeline_id'],
+                                 lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
 
         final_lost_stage = []
         for lead in lost_stage_list:
