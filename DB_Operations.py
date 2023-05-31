@@ -119,7 +119,7 @@ def create_table_leads_table(connection, cursor) -> None:
     try:
         logging.info('create_table_leads_table')
         create_query = """CREATE TABLE leads_table(
-        ID INT PRIMARY KEY NOT NULL ,
+        ID INT PRIMARY KEY NOT NULL,
         Название TEXT,
         Бюджет INT,
         Состояние TEXT,
@@ -147,7 +147,7 @@ def create_table_custom_fields_table(connection, cursor) -> None:
     try:
         logging.info('create_table_custom_fields_table')
         create_query = """CREATE TABLE custom_fields_table(
-        ID INT PRIMARY KEY NOT NULL ,
+        ID INT PRIMARY KEY NOT NULL,
         Был_в_Новая_заявка TEXT,
         Был_в_Менеджер_назначен TEXT,
         Был_в_Взята_в_работу TEXT,
@@ -275,7 +275,7 @@ def create_table_object_table(connection, cursor) -> None:
     try:
         logging.info('create_table_object_table')
         create_query = """CREATE TABLE object_table(
-        ID INT PRIMARY KEY NOT NULL ,
+        ID INT PRIMARY KEY NOT NULL,
         Проект TEXT,
         Квартал TEXT,
         Название_объекта TEXT,
@@ -395,6 +395,37 @@ def insert_utm_table(connection, cursor, records_to_insert: list) -> None:
         connection.commit()
     except Exception as error:
         logging.error(f'insert_utm_table: {error}')
+
+
+@db_decorator
+def insert_object_table(connection, cursor, records_to_insert: list) -> None:
+    """Записывает поля по объекту в базу"""
+    try:
+        logging.info(f'insert_object_table {len(records_to_insert)}')
+        insert_query = """INSERT INTO object_table (
+                ID, Проект, Квартал, Название_объекта, Тип_помещения, Цена_объекта, S_м2, Цена_за_м2, Дом) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        logging.error(f'insert_object_table: {error}')
+
+
+@db_decorator
+def insert_finance_table(connection, cursor, records_to_insert: list) -> None:
+    """Записывает поля по финансам в базу"""
+    try:
+        logging.info(f'insert_finance_table {len(records_to_insert)}')
+        insert_query = """INSERT INTO finance_table (
+                ID, Депозит_сделан, Способ_оплаты_депозита, Сумма_депозита, Дата_оплаты_депозита, Номер_договора, 
+                Дата_подписания_договора, Дата_завершения_строительства, Источник_платежа, Система_оплаты, 
+                Сумма_первого_платежа, Дата_первого_платежа, Сумма_второго_платежа, Дата_второго_платежа, 
+                Сумма_третьего_платежа, Дата_третьего_платежа, Сумма_четвертого_платежа, Дата_четвертого_платежа) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+        cursor.executemany(insert_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        logging.error(f'insert_finance_table: {error}')
 
 
 @db_decorator
@@ -567,7 +598,7 @@ def update_custom_fields(connection, cursor, records_to_insert: list) -> None:
                 Дата_Получена_предоплата = EXCLUDED.Дата_Получена_предоплата,
                 Дата_Реквизиты_получены = EXCLUDED.Дата_Реквизиты_получены,
                 Дата_Подготовка_договора = EXCLUDED.Дата_Подготовка_договора, 
-                Дата_Договор_подготовлен = EXCLUDED.Дата_Договор_подготовлен , 
+                Дата_Договор_подготовлен = EXCLUDED.Дата_Договор_подготовлен, 
                 Дата_Договор_у_юриста = EXCLUDED.Дата_Договор_у_юриста, 
                 Дата_Юристом_согласован, = EXCLUDED.Дата_Юристом_согласован,
                 Дата_Договор_клиенту = EXCLUDED.Дата_Договор_клиенту,
@@ -617,6 +648,53 @@ def update_utm_table(connection, cursor, records_to_insert: list) -> None:
         logging.error(f'update_utm_table: {error}')
 
 
+@db_decorator
+def update_object_table(connection, cursor, records_to_insert: list) -> None:
+    """Обновляет object в базе"""
+    try:
+        logging.info(f'update_object_table {len(records_to_insert)}')
+        update_query = """INSERT INTO object_table (
+                ID, Проект, Квартал, Название_объекта, Тип_помещения, Цена_объекта, S_м2, Цена_за_м2, Дом) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (id) DO UPDATE SET
+                Проект = EXCLUDED.Проект, Квартал = EXCLUDED.Квартал, Название_объекта = EXCLUDED.Название_объекта, 
+                Тип_помещения = EXCLUDED.Тип_помещения, Цена_объекта = EXCLUDED.Цена_объекта, 
+                S_м2 = EXCLUDED.S_м2, Цена_за_м2 = EXCLUDED.Цена_за_м2, Дом = EXCLUDED.Дом"""
+        cursor.executemany(update_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        logging.error(f'update_object_table: {error}')
+
+@db_decorator
+def update_finance_table(connection, cursor, records_to_insert: list) -> None:
+    """Обновляет finance в базе"""
+    try:
+        logging.info(f'update_finance_table {len(records_to_insert)}')
+        update_query = """INSERT INTO finance_table (
+                ID, Депозит_сделан, Способ_оплаты_депозита, Сумма_депозита, Дата_оплаты_депозита, Номер_договора, 
+                Дата_подписания_договора, Дата_завершения_строительства, Источник_платежа, Система_оплаты, 
+                Сумма_первого_платежа, Дата_первого_платежа, Сумма_второго_платежа, Дата_второго_платежа, 
+                Сумма_третьего_платежа, Дата_третьего_платежа, Сумма_четвертого_платежа, Дата_четвертого_платежа) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ON CONFLICT (id) DO UPDATE SET
+                Депозит_сделан = EXCLUDED.Депозит_сделан, Способ_оплаты_депозита = EXCLUDED.Способ_оплаты_депозита, 
+                Сумма_депозита = EXCLUDED.Сумма_депозита, Дата_оплаты_депозита = EXCLUDED.Дата_оплаты_депозита,
+                Номер_договора = EXCLUDED.Номер_договора, Дата_подписания_договора = EXCLUDED.Дата_подписания_договора,
+                Дата_завершения_строительства = EXCLUDED.Дата_завершения_строительства, 
+                Источник_платежа = EXCLUDED.Источник_платежа, Система_оплаты = EXCLUDED.Система_оплаты, 
+                Сумма_первого_платежа = EXCLUDED.Сумма_первого_платежа, 
+                Дата_первого_платежа = EXCLUDED.Дата_первого_платежа, 
+                Сумма_второго_платежа = EXCLUDED.Сумма_второго_платежа, 
+                Дата_второго_платежа = EXCLUDED. Дата_второго_платежа, 
+                Сумма_третьего_платежа = EXCLUDED.Сумма_третьего_платежа, 
+                Дата_третьего_платежа = EXCLUDED.Дата_третьего_платежа, 
+                Сумма_четвертого_платежа = EXCLUDED.Сумма_четвертого_платежа, 
+                Дата_четвертого_платежа = EXCLUDED.Дата_четвертого_платежа
+                """
+        cursor.executemany(update_query, records_to_insert)
+        connection.commit()
+    except Exception as error:
+        logging.error(f'update_finance_table: {error}')
 @db_decorator
 def update_lost_stage(connection, cursor, records_to_insert: list) -> None:
     """Записывает проигранный этап в сделку"""
