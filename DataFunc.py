@@ -340,51 +340,33 @@ def get_leads_custom_fields_dict_update(leads) -> dict:
 
 def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями"""
-    # custom_fields = {'Был в Новая заявка': 1, 'Был в Менеджер назначен': 2, 'Был в Взята в работу': 3,
-    #                  'Был в Попытка связаться': 4, 'Был в Презентация отправлена': 5, 'Был в Контакт состоялся': 6,
-    #                  'Был в Встреча назначена': 7, 'Был в Встреча отменена': 8, 'Был в Встреча проведена': 9,
-    #                  'Был в Ожидаем предоплату': 10, 'Был в Получена предоплата': 11, 'Был в Реквизиты получены': 12,
-    #                  'Был в Договор отправлен юристу': 13, 'Был в Договор отправлен клиенту': 14,
-    #                  'Был в Договор подписан': 15, 'Был в Договор согласован': 16, 'Был в Первый платеж': 17,
-    #                  'Был в Второй платеж': 18, 'Был в Третий платеж': 19, 'Был в Выиграно': 20, 'Был в Проиграно': 21,
-    #                  'Дата Новая заявка': 22,
-    #                  'Дата Менеджер назначен': 23, 'Дата Взята в работу': 24, 'Дата Попытка связаться': 25,
-    #                  'Дата Презентация отправлена': 26, 'Дата Контакт состоялся': 27, 'Дата Встреча назначена': 28,
-    #                  'Дата Встреча отменена': 29, 'Дата Встреча проведена': 30, 'Дата Ожидаем предоплату': 31,
-    #                  'Дата Получена предоплата': 32, 'Дата Реквизиты получены': 33,
-    #                  'Дата Договор отправлен юристу': 34, 'Дата Договор отправлен клиенту': 35,
-    #                  'Дата Договор согласован' : 36, 'Дата Договор подписан': 37, 'Дата Первый платеж': 38,
-    #                  'Дата Второй платеж': 39, 'Дата Третий платеж': 40, 'Дата Выиграно': 41,
-    #                  'Дата Проиграно': 42, 'Источник заявки / Lead source': 43, 'Взята': 44, 'Скорость взятия': 45,
-    #                  'Причина отказа / Rejection reason': 46, 'Отказ подробно / Failure Detail': 47,
-    #                  'Партнер / Partner': 48, 'Проект / Project': 49, 'Язык / Language': 50,
-    #                  'FORMNAME': 51, 'Классификация сделки': 52}
 
     custom_fields = {'1150819': 1, '1150857': 2, '1150821': 3,
                      '1150823': 4, '1151845': 5, '1150825': 6,
-                     '1150827': 7, '1150831': 9,
-                     '1150833': 10, '1150835': 11, '1150837': 12,
-                     '1155419': 13, '1150839': 14,
-                     '1150841': 15, '1152329': 16, '1150843': 17,
-                     '1150845': 18, '1150847': 19, '1150849': 20, '1150851': 21,
-                     '1150853': 22,
-                     '1150859': 23, '1150855': 24, '1150861': 25,
-                     '1151847': 26, '1150863': 27, '1150865': 28,
-                     '1150869': 30, '1150871': 31,
-                     '1150873': 32, '1150875': 33,
-                     '1155421': 34, '1150877': 35,
-                     '1152327': 36, '1150879': 37, '1150881': 38,
-                     '1150883': 39, '1150885': 40, '1150887': 41,
-                     '1150889': 42, '1148679': 43, '1150995': 44, '1150993': 45,
-                     '1150999': 46, '1151893': 47,
-                     '1151863': 48, '1136749': 49, '1147847': 50,
-                     '1126883': 51, '1160341': 52}
+                     '1150827': 7, '1150831': 8, '1150833': 9,
+                     '1150835': 10, '1150837': 11, '1152879': 12,
+                     '1151841': 13, '1155419': 14, '1155425': 15,
+                     '1150839': 16, '1152329': 17, '1150841': 18,
+                     '1150843': 19, '1150845': 20, '1150847': 21,
+                     '1150849': 22, '1150851': 23, '1150853': 24,
+                     '1150859': 25, '1150855': 26, '1150861': 27,
+                     '1151847': 28, '1150863': 29, '1150865': 30,
+                     '1150869': 31, '1150871': 32, '1150873': 33,
+                     '1150875': 34, '1152877': 35, '1151843': 36,
+                     '1155421': 37, '1155423': 38, '1150877': 39,
+                     '1152327': 40, '1150879': 41, '1150881': 42,
+                     '1150883': 43, '1150885': 44, '1150887': 45,
+                     '1150889': 46, '1148679': 47, '1150995': 48,
+                     '1150993': 49, '1150999': 50, '1151893': 51,
+                     '1151863': 52, '1160345': 53, '1147847': 54,
+                     '1126883': 55, '1160341': 56}
 
     leads_dict = leads_custom_fields_dict
 
     try:
         custom_fields_dict = {
-            lead: [{custom_fields[f'{field[0]}']: field[1]} for field in leads_dict[lead] if field[0] in custom_fields] for
+            lead: [{custom_fields[f'{field[0]}']: field[1]} for field in leads_dict[lead] if field[0] in custom_fields]
+            for
             lead
             in leads_dict.keys()}
         # очищение от пустых лидов без доп.полей
@@ -444,6 +426,7 @@ def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str) -> str:
 
 def get_custom_fields_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
+
     records_to_insert = []
     logging.info('Возвращаю список записей для записи в базу')
     try:
@@ -456,86 +439,94 @@ def get_custom_fields_record(data: json) -> list:
             was_in_presentation_sent = convert_item(lead=lead, custom_fields_dict=data, need_item='5')
             was_in_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='6')
             was_in_a_meeting_start = convert_item(lead=lead, custom_fields_dict=data, need_item='7')
-            was_in_a_meeting_close = convert_item(lead=lead, custom_fields_dict=data, need_item='8')
-            was_held_in_meetings = convert_item(lead=lead, custom_fields_dict=data, need_item='9')
-            was_waiting_for_prepayment = convert_item(lead=lead, custom_fields_dict=data, need_item='10')
-            was_in_receiving_prepayment = convert_item(lead=lead, custom_fields_dict=data, need_item='11')
-            was_in_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='12')
-            was_sent_to_a_lawyer_in_the_agreement = convert_item(lead=lead, custom_fields_dict=data, need_item='13')
-            was_sent_to_the_client_in_the_agreement = convert_item(lead=lead, custom_fields_dict=data, need_item='14')
-            was_agreed_to_the_contract = convert_item(lead=lead, custom_fields_dict=data, need_item='15')
-            was_signed_in_the_treaty = convert_item(lead=lead, custom_fields_dict=data, need_item='16')
-            was_in_the_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='17')
-            was_in_the_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='18')
-            was_in_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='19')
-            was_in_won = convert_item(lead=lead, custom_fields_dict=data, need_item='20')
-            was_in_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='21')
-            date_new_application = convert_item(lead=lead, custom_fields_dict=data, need_item='22')
+            was_held_in_meetings = convert_item(lead=lead, custom_fields_dict=data, need_item='8')
+            was_waiting_for_prepayment = convert_item(lead=lead, custom_fields_dict=data, need_item='9')
+            was_in_receiving_prepayment = convert_item(lead=lead, custom_fields_dict=data, need_item='10')
+            was_in_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='11')
+            was_in_contract_preparation = convert_item(lead=lead, custom_fields_dict=data, need_item='12')
+            was_in_the_treaty_prepared = convert_item(lead=lead, custom_fields_dict=data, need_item='13')
+            was_in_a_contract_with_a_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='14')
+            was_agreed_with_the_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='15')
+            was_in_the_contract_to_the_client = convert_item(lead=lead, custom_fields_dict=data, need_item='16')
+            was_agreed_to_in_the_contract = convert_item(lead=lead, custom_fields_dict=data, need_item='17')
+            was_he_agreement_was_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='18')
+            was_in_the_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='19')
+            was_in_the_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='20')
+            was_in_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='21')
+            was_in_won = convert_item(lead=lead, custom_fields_dict=data, need_item='22')
+            was_in_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='23')
+            date_new_application = convert_item(lead=lead, custom_fields_dict=data, need_item='24')
             date_new_application = convert_unix_to_date_time(date_new_application)
-            date_manager_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='23')
+            date_manager_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='25')
             date_manager_appointed = convert_unix_to_date_time(date_manager_appointed)
-            date_hired = convert_item(lead=lead, custom_fields_dict=data, need_item='24')
+            date_hired = convert_item(lead=lead, custom_fields_dict=data, need_item='26')
             date_hired = convert_unix_to_date_time(date_hired)
-            date_attempt_to_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='25')
+            date_attempt_to_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='27')
             date_attempt_to_contact = convert_unix_to_date_time(date_attempt_to_contact)
-            date_presentation_sent = convert_item(lead=lead, custom_fields_dict=data, need_item='26')
+            date_presentation_sent = convert_item(lead=lead, custom_fields_dict=data, need_item='28')
             date_presentation_sent = convert_unix_to_date_time(date_presentation_sent)
-            date_contact_took_place = convert_item(lead=lead, custom_fields_dict=data, need_item='27')
+            date_contact_took_place = convert_item(lead=lead, custom_fields_dict=data, need_item='29')
             date_contact_took_place = convert_unix_to_date_time(date_contact_took_place)
-            date_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='28')
+            date_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='30')
             date_appointed = convert_unix_to_date_time(date_appointed)
-            date_meeting_canceled = convert_item(lead=lead, custom_fields_dict=data, need_item='29')
-            date_meeting_canceled = convert_unix_to_date_time(date_meeting_canceled)
-            date_meeting_held = convert_item(lead=lead, custom_fields_dict=data, need_item='30')
+            date_meeting_held = convert_item(lead=lead, custom_fields_dict=data, need_item='31')
             date_meeting_held = convert_unix_to_date_time(date_meeting_held)
-            date_awaiting_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='31')
+            date_awaiting_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='32')
             date_awaiting_payment = convert_unix_to_date_time(date_awaiting_payment)
-            date_prepayment_received = convert_item(lead=lead, custom_fields_dict=data, need_item='32')
+            date_prepayment_received = convert_item(lead=lead, custom_fields_dict=data, need_item='33')
             date_prepayment_received = convert_unix_to_date_time(date_prepayment_received)
-            date_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='33')
+            date_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='34')
             date_details_received = convert_unix_to_date_time(date_details_received)
-            date_contract_sent_to_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='34')
+            date_contract_preparation = convert_item(lead=lead, custom_fields_dict=data, need_item='35')
+            date_contract_preparation = convert_unix_to_date_time(date_contract_preparation)
+            date_contract_prepared = convert_item(lead=lead, custom_fields_dict=data, need_item='36')
+            date_contract_prepared = convert_unix_to_date_time(date_contract_prepared)
+            date_contract_sent_to_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='37')
             date_contract_sent_to_lawyer = convert_unix_to_date_time(date_contract_sent_to_lawyer)
-            date_contract_sent_to_customer = convert_item(lead=lead, custom_fields_dict=data, need_item='35')
+            date_agreed_by_the_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='38')
+            date_agreed_by_the_lawyer = convert_unix_to_date_time(date_agreed_by_the_lawyer)
+            date_contract_sent_to_customer = convert_item(lead=lead, custom_fields_dict=data, need_item='39')
             date_contract_sent_to_customer = convert_unix_to_date_time(date_contract_sent_to_customer)
-            date_contract_agreed = convert_item(lead=lead, custom_fields_dict=data, need_item='36')
+            date_contract_agreed = convert_item(lead=lead, custom_fields_dict=data, need_item='40')
             date_contract_agreed = convert_unix_to_date_time(date_contract_agreed)
-            date_contract_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='37')
+            date_contract_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='41')
             date_contract_signed = convert_unix_to_date_time(date_contract_signed)
-            date_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='38')
+            date_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='42')
             date_first_payment = convert_unix_to_date_time(date_first_payment)
-            date_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='39')
+            date_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='43')
             date_second_payment = convert_unix_to_date_time(date_second_payment)
-            date_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='40')
+            date_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='44')
             date_third_payment = convert_unix_to_date_time(date_third_payment)
-            date_won = convert_item(lead=lead, custom_fields_dict=data, need_item='41')
+            date_won = convert_item(lead=lead, custom_fields_dict=data, need_item='45')
             date_won = convert_unix_to_date_time(date_won)
-            date_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='42')
+            date_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='46')
             date_lost = convert_unix_to_date_time(date_lost)
-            application_source = convert_item(lead=lead, custom_fields_dict=data, need_item='43')
-            taken = convert_item(lead=lead, custom_fields_dict=data, need_item='44')
-            take_speed = convert_item(lead=lead, custom_fields_dict=data, need_item='45')
+            application_source = convert_item(lead=lead, custom_fields_dict=data, need_item='47')
+            taken = convert_item(lead=lead, custom_fields_dict=data, need_item='48')
+            take_speed = convert_item(lead=lead, custom_fields_dict=data, need_item='49')
             take_speed = convert_unix_to_date_time(take_speed)
-            rejection_reason = convert_item(lead=lead, custom_fields_dict=data, need_item='46')
-            failure_detail = convert_item(lead=lead, custom_fields_dict=data, need_item='47')
-            partner_agent = convert_item(lead=lead, custom_fields_dict=data, need_item='48')
-            project = convert_item(lead=lead, custom_fields_dict=data, need_item='49')
-            language = convert_item(lead=lead, custom_fields_dict=data, need_item='50')
-            formname = convert_item(lead=lead, custom_fields_dict=data, need_item='51')
-            transaction_classification = convert_item(lead=lead, custom_fields_dict=data, need_item='52')
+            rejection_reason = convert_item(lead=lead, custom_fields_dict=data, need_item='50')
+            failure_detail = convert_item(lead=lead, custom_fields_dict=data, need_item='51')
+            partner_agent = convert_item(lead=lead, custom_fields_dict=data, need_item='52')
+            project = convert_item(lead=lead, custom_fields_dict=data, need_item='53')
+            language = convert_item(lead=lead, custom_fields_dict=data, need_item='54')
+            formname = convert_item(lead=lead, custom_fields_dict=data, need_item='55')
+            transaction_classification = convert_item(lead=lead, custom_fields_dict=data, need_item='56')
 
             record_to_insert = (
                 lead_id, was_in_a_new_application, was_in_manager, was_in_hired, was_trying_to_contact,
-                was_in_presentation_sent, was_in_contact, was_in_a_meeting_start, was_in_a_meeting_close,
+                was_in_presentation_sent, was_in_contact, was_in_a_meeting_start,
                 was_held_in_meetings, was_waiting_for_prepayment, was_in_receiving_prepayment,
-                was_in_details_received, was_sent_to_a_lawyer_in_the_agreement,
-                was_sent_to_the_client_in_the_agreement, was_agreed_to_the_contract, was_signed_in_the_treaty,
+                was_in_details_received, was_in_contract_preparation, was_in_the_treaty_prepared,
+                was_in_a_contract_with_a_lawyer, was_agreed_with_the_lawyer, was_in_the_contract_to_the_client,
+                was_agreed_to_in_the_contract, was_he_agreement_was_signed,
                 was_in_the_first_payment, was_in_the_second_payment, was_in_third_payment,
                 was_in_won, was_in_lost, date_new_application, date_manager_appointed,
                 date_hired, date_attempt_to_contact, date_presentation_sent, date_contact_took_place,
-                date_appointed, date_meeting_canceled, date_meeting_held, date_awaiting_payment,
-                date_prepayment_received, date_details_received, date_contract_sent_to_lawyer,
-                date_contract_sent_to_customer, date_contract_agreed, date_contract_signed, date_first_payment, date_second_payment,
+                date_appointed, date_meeting_held, date_awaiting_payment,
+                date_prepayment_received, date_details_received, date_contract_preparation, date_contract_prepared,
+                date_contract_sent_to_lawyer, date_agreed_by_the_lawyer, date_contract_sent_to_customer,
+                date_contract_agreed, date_contract_signed, date_first_payment, date_second_payment,
                 date_third_payment, date_won, date_lost, application_source, taken, take_speed, rejection_reason,
                 failure_detail, partner_agent, project, language, formname, transaction_classification)
 
@@ -655,7 +646,7 @@ def get_lost_stage(data) -> list:
                 if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines:
                     if lead['value_after'][0]['lead_status']['id'] == 143:
                         lost_stage_list.append([(lead['value_before'][0]['lead_status']['pipeline_id'],
-                             lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
+                                                 lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
 
         final_lost_stage = []
         for lead in lost_stage_list:
@@ -687,7 +678,7 @@ def get_lost_stage_update(data):
                     if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines:
                         if lead['value_after'][0]['lead_status']['id'] == 143:
                             lost_stage_list.append([(lead['value_before'][0]['lead_status']['pipeline_id'],
-                                 lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
+                                                     lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
 
         final_lost_stage = []
         for lead in lost_stage_list:
