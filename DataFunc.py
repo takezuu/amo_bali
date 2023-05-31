@@ -89,7 +89,6 @@ def convert_unix_to_date_time(unix_time: int) -> datetime or None:
     except Exception as error:
         logging.error(f'convert_unix_to_date_time: {error}')
     else:
-        logging.info(f'Возвращаю convert_unix_to_date_time: {time}')
         return time
 
 
@@ -453,11 +452,11 @@ def convert_item_custom(lead: str, custom_fields_dict: dict, need_item: str):
             if need_item in item:
                 if need_item in ['6', '8', '10']:
                     try:
-                        return int(item[str(need_item)])
+                        return int(item[need_item])
                     except ValueError:
-                        return float(item[str(need_item)])
+                        return float(item[need_item])
                 else:
-                    return item[str(need_item)]
+                    return item[need_item]
     except Exception as error:
         logging.error(f'convert_item: {error}')
 
@@ -467,7 +466,7 @@ def convert_item_utm(lead: str, custom_fields_dict: dict, need_item: str) -> str
     try:
         for item in custom_fields_dict[lead]:
             if need_item in item:
-                return str(item[str(need_item)])
+                return str(item[need_item])
     except Exception as error:
         logging.error(f'convert_item_2: {error}')
 
@@ -479,11 +478,11 @@ def convert_item_object(lead: str, custom_fields_dict: dict, need_item: str):
             if need_item in item:
                 if need_item in ['5', '7']:
                     try:
-                        return int(item[str(need_item)])
+                        return int(item[need_item])
                     except ValueError:
-                        return float(item[str(need_item)])
+                        return float(item[need_item])
                 else:
-                    return item[str(need_item)]
+                    return item[need_item]
     except Exception as error:
         logging.error(f'convert_item: {error}')
 
@@ -495,11 +494,11 @@ def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
             if need_item in item:
                 if need_item in ['3', '10', '12', '14', '16']:
                     try:
-                        return int(item[str(need_item)])
+                        return int(item[need_item])
                     except ValueError:
-                        return float(item[str(need_item)])
+                        return float(item[need_item])
                 else:
-                    return item[str(need_item)]
+                    return item[need_item]
     except Exception as error:
         logging.error(f'convert_item: {error}')
 

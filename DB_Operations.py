@@ -566,7 +566,7 @@ def update_custom_fields(connection, cursor, records_to_insert: list) -> None:
                 Партнер_Агент, Проект, Язык, formname, Классификация_сделки) \
                 VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,
                 %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s
-                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                %s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET
                 Был_в_Новая_заявка = EXCLUDED.Был_в_Новая_заявка,
                 Был_в_Менеджер_назначен = EXCLUDED.Был_в_Менеджер_назначен,

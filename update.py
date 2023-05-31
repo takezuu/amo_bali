@@ -2,7 +2,8 @@ import DataFunc
 from MainFunc import create_dict, create_api, update_insert, update_token, create_api_filter, \
     delete_all_files, get_deleated_lead, delete_deleted_leads, update_insert_reverse
 from DB_Operations import update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date, \
-    delete_leads, update_lost_stage, insert_finance_table, insert_object_table
+    delete_leads, update_lost_stage, insert_finance_table, insert_object_table, update_object_table, \
+    update_finance_table
 
 # авторизация и получение нового токена
 update_token()
@@ -48,11 +49,11 @@ update_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=update_custo
               extra_prefix='Dict', name_of_data='custom_fields')
 
 # запись object_fields
-update_insert(funcc=DataFunc.get_object_fields_record, insert_funcc=insert_object_table,
+update_insert(funcc=DataFunc.get_object_fields_record, insert_funcc=update_object_table,
               extra_prefix='Dict', name_of_data='object_fields')
 
 # запись finance_fields
-update_insert(funcc=DataFunc.get_finance_fields_record, insert_funcc=insert_finance_table,
+update_insert(funcc=DataFunc.get_finance_fields_record, insert_funcc=update_finance_table,
               extra_prefix='Dict', name_of_data='finance_fields')
 
 # запись utm_table
