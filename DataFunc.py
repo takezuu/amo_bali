@@ -378,8 +378,56 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
         logging.error(f'get_custom_fields_dict: {error}')
 
 
+def get_custom_object_dict(leads_custom_fields_dict: dict) -> dict:
+    """Возвращает преобразовыннй словарь лидов с дополнительными полями по объектам"""
+
+    object_fields = {'1160345': 1, '1157341': 2, '1157351': 3,
+                     '1157345': 4, '1159721': 5, '1157353': 6,
+                     '1157355': 7, '1157343': 8}
+
+    leads_dict = leads_custom_fields_dict
+
+    try:
+        object_fields_dict = {
+            lead: [{object_fields[f'{field[0]}']: field[1]} for field in leads_dict[lead] if field[0] in object_fields]
+            for lead in leads_dict.keys()}
+        # очищение от пустых лидов без доп.полей объектов
+        object_fields_dict = {lead: object_fields for lead, object_fields in object_fields_dict.items() if
+                              object_fields}
+        logging.info('Создаю словарь доп.полей объектов')
+        return object_fields_dict
+    except Exception as error:
+        logging.error(f'get_object_fields_dict: {error}')
+
+
+def get_custom_finance_dict(leads_custom_fields_dict: dict) -> dict:
+    """Возвращает преобразовыннй словарь лидов с дополнительными полями по финансам"""
+
+    finance_fields = {'1161664': 1, '1161670': 2, '1161666': 3,
+                      '1161668': 4, '1160357': 5, '1161672': 6,
+                      '1161674': 7, '642423': 8, '642307': 9,
+                      '642311': 10, '642317': 11, '642313': 12,
+                      '642321': 13, '642315': 14, '642371': 15,
+                      '1101317': 16, '1101319': 17}
+
+    leads_dict = leads_custom_fields_dict
+
+    try:
+        finance_fields_dict = {
+            lead: [{finance_fields[f'{field[0]}']: field[1]} for field in leads_dict[lead] if
+                   field[0] in finance_fields]
+            for lead in leads_dict.keys()}
+        # очищение от пустых лидов без доп.полей финансов
+        finance_fields_dict = {lead: finance_fields for lead, finance_fields in finance_fields_dict.items() if
+                               finance_fields}
+        logging.info('Создаю словарь доп.полей финансов')
+        return finance_fields_dict
+    except Exception as error:
+        logging.error(f'get_finance_fields_dict: {error}')
+
+
 def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
-    """Возвращает преобразовыннй словарь лидов с дополнительными полями"""
+    """Возвращает преобразовыннй словарь лидов с дополнительными полями utm"""
     custom_fields = {'fbclid': 1, 'yclid': 2, 'gclid': 3, 'gclientid': 4, 'from': 5,
                      'utm_source': 6, 'utm_medium': 7, 'utm_campaign': 8, 'utm_term': 9, 'utm_content': 10,
                      'utm_referrer': 11, '_ym_uid': 12, '_ym_counter': 13, 'roistat': 14}
@@ -398,12 +446,12 @@ def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
         logging.error(f'get_utm_dict: {error}')
 
 
-def convert_item(lead: str, custom_fields_dict: dict, need_item: str):
-    """Конвертирует элемент и возвращает его"""
+def convert_item_custom(lead: str, custom_fields_dict: dict, need_item: str):
+    """Конвертирует элемент и возвращает его для custom_fields"""
     try:
         for item in custom_fields_dict[lead]:
             if need_item in item:
-                if need_item == '6' or need_item == '8' or need_item == '10':
+                if need_item in ['6', '8', '10']:
                     try:
                         return int(item[str(need_item)])
                     except ValueError:
@@ -414,8 +462,8 @@ def convert_item(lead: str, custom_fields_dict: dict, need_item: str):
         logging.error(f'convert_item: {error}')
 
 
-def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str) -> str:
-    """Конвертирует элемент и возвращает его"""
+def convert_item_utm(lead: str, custom_fields_dict: dict, need_item: str) -> str:
+    """Конвертирует элемент и возвращает его для utm"""
     try:
         for item in custom_fields_dict[lead]:
             if need_item in item:
@@ -424,94 +472,126 @@ def convert_item_2(lead: str, custom_fields_dict: dict, need_item: str) -> str:
         logging.error(f'convert_item_2: {error}')
 
 
+def convert_item_object(lead: str, custom_fields_dict: dict, need_item: str):
+    """Конвертирует элемент и возвращает его для object"""
+    try:
+        for item in custom_fields_dict[lead]:
+            if need_item in item:
+                if need_item in ['5', '7']:
+                    try:
+                        return int(item[str(need_item)])
+                    except ValueError:
+                        return float(item[str(need_item)])
+                else:
+                    return item[str(need_item)]
+    except Exception as error:
+        logging.error(f'convert_item: {error}')
+
+
+def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
+    """Конвертирует элемент и возвращает его для finance"""
+    try:
+        for item in custom_fields_dict[lead]:
+            if need_item in item:
+                if need_item in ['3', '10', '12', '14', '16']:
+                    try:
+                        return int(item[str(need_item)])
+                    except ValueError:
+                        return float(item[str(need_item)])
+                else:
+                    return item[str(need_item)]
+    except Exception as error:
+        logging.error(f'convert_item: {error}')
+
+
 def get_custom_fields_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
 
     records_to_insert = []
-    logging.info('Возвращаю список записей для записи в базу')
+    logging.info('Возвращаю список записей для записи в базу custom fields')
     try:
         for lead in data.keys():
             lead_id = int(lead)
-            was_in_a_new_application = convert_item(lead=lead, custom_fields_dict=data, need_item='1')
-            was_in_manager = convert_item(lead=lead, custom_fields_dict=data, need_item='2')
-            was_in_hired = convert_item(lead=lead, custom_fields_dict=data, need_item='3')
-            was_trying_to_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='4')
-            was_in_presentation_sent = convert_item(lead=lead, custom_fields_dict=data, need_item='5')
-            was_in_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='6')
-            was_in_a_meeting_start = convert_item(lead=lead, custom_fields_dict=data, need_item='7')
-            was_held_in_meetings = convert_item(lead=lead, custom_fields_dict=data, need_item='8')
-            was_waiting_for_prepayment = convert_item(lead=lead, custom_fields_dict=data, need_item='9')
-            was_in_receiving_prepayment = convert_item(lead=lead, custom_fields_dict=data, need_item='10')
-            was_in_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='11')
-            was_in_contract_preparation = convert_item(lead=lead, custom_fields_dict=data, need_item='12')
-            was_in_the_treaty_prepared = convert_item(lead=lead, custom_fields_dict=data, need_item='13')
-            was_in_a_contract_with_a_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='14')
-            was_agreed_with_the_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='15')
-            was_in_the_contract_to_the_client = convert_item(lead=lead, custom_fields_dict=data, need_item='16')
-            was_agreed_to_in_the_contract = convert_item(lead=lead, custom_fields_dict=data, need_item='17')
-            was_he_agreement_was_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='18')
-            was_in_the_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='19')
-            was_in_the_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='20')
-            was_in_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='21')
-            was_in_won = convert_item(lead=lead, custom_fields_dict=data, need_item='22')
-            was_in_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='23')
-            date_new_application = convert_item(lead=lead, custom_fields_dict=data, need_item='24')
+            was_in_a_new_application = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='1')
+            was_in_manager = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='2')
+            was_in_hired = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='3')
+            was_trying_to_contact = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='4')
+            was_in_presentation_sent = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='5')
+            was_in_contact = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='6')
+            was_in_a_meeting_start = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='7')
+            was_held_in_meetings = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='8')
+            was_waiting_for_prepayment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='9')
+            was_in_receiving_prepayment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='10')
+            was_in_details_received = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='11')
+            was_in_contract_preparation = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='12')
+            was_in_the_treaty_prepared = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='13')
+            was_in_a_contract_with_a_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='14')
+            was_agreed_with_the_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='15')
+            was_in_the_contract_to_the_client = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='16')
+            was_agreed_to_in_the_contract = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='17')
+            was_he_agreement_was_signed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='18')
+            was_in_the_first_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='19')
+            was_in_the_second_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='20')
+            was_in_third_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='21')
+            was_in_won = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='22')
+            was_in_lost = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='23')
+            date_new_application = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='24')
             date_new_application = convert_unix_to_date_time(date_new_application)
-            date_manager_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='25')
+            date_manager_appointed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='25')
             date_manager_appointed = convert_unix_to_date_time(date_manager_appointed)
-            date_hired = convert_item(lead=lead, custom_fields_dict=data, need_item='26')
+            date_hired = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='26')
             date_hired = convert_unix_to_date_time(date_hired)
-            date_attempt_to_contact = convert_item(lead=lead, custom_fields_dict=data, need_item='27')
+            date_attempt_to_contact = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='27')
             date_attempt_to_contact = convert_unix_to_date_time(date_attempt_to_contact)
-            date_presentation_sent = convert_item(lead=lead, custom_fields_dict=data, need_item='28')
+            date_presentation_sent = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='28')
             date_presentation_sent = convert_unix_to_date_time(date_presentation_sent)
-            date_contact_took_place = convert_item(lead=lead, custom_fields_dict=data, need_item='29')
+            date_contact_took_place = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='29')
             date_contact_took_place = convert_unix_to_date_time(date_contact_took_place)
-            date_appointed = convert_item(lead=lead, custom_fields_dict=data, need_item='30')
+            date_appointed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='30')
             date_appointed = convert_unix_to_date_time(date_appointed)
-            date_meeting_held = convert_item(lead=lead, custom_fields_dict=data, need_item='31')
+            date_meeting_held = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='31')
             date_meeting_held = convert_unix_to_date_time(date_meeting_held)
-            date_awaiting_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='32')
+            date_awaiting_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='32')
             date_awaiting_payment = convert_unix_to_date_time(date_awaiting_payment)
-            date_prepayment_received = convert_item(lead=lead, custom_fields_dict=data, need_item='33')
+            date_prepayment_received = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='33')
             date_prepayment_received = convert_unix_to_date_time(date_prepayment_received)
-            date_details_received = convert_item(lead=lead, custom_fields_dict=data, need_item='34')
+            date_details_received = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='34')
             date_details_received = convert_unix_to_date_time(date_details_received)
-            date_contract_preparation = convert_item(lead=lead, custom_fields_dict=data, need_item='35')
+            date_contract_preparation = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='35')
             date_contract_preparation = convert_unix_to_date_time(date_contract_preparation)
-            date_contract_prepared = convert_item(lead=lead, custom_fields_dict=data, need_item='36')
+            date_contract_prepared = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='36')
             date_contract_prepared = convert_unix_to_date_time(date_contract_prepared)
-            date_contract_sent_to_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='37')
+            date_contract_sent_to_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='37')
             date_contract_sent_to_lawyer = convert_unix_to_date_time(date_contract_sent_to_lawyer)
-            date_agreed_by_the_lawyer = convert_item(lead=lead, custom_fields_dict=data, need_item='38')
+            date_agreed_by_the_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='38')
             date_agreed_by_the_lawyer = convert_unix_to_date_time(date_agreed_by_the_lawyer)
-            date_contract_sent_to_customer = convert_item(lead=lead, custom_fields_dict=data, need_item='39')
+            date_contract_sent_to_customer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='39')
             date_contract_sent_to_customer = convert_unix_to_date_time(date_contract_sent_to_customer)
-            date_contract_agreed = convert_item(lead=lead, custom_fields_dict=data, need_item='40')
+            date_contract_agreed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='40')
             date_contract_agreed = convert_unix_to_date_time(date_contract_agreed)
-            date_contract_signed = convert_item(lead=lead, custom_fields_dict=data, need_item='41')
+            date_contract_signed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='41')
             date_contract_signed = convert_unix_to_date_time(date_contract_signed)
-            date_first_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='42')
+            date_first_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='42')
             date_first_payment = convert_unix_to_date_time(date_first_payment)
-            date_second_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='43')
+            date_second_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='43')
             date_second_payment = convert_unix_to_date_time(date_second_payment)
-            date_third_payment = convert_item(lead=lead, custom_fields_dict=data, need_item='44')
+            date_third_payment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='44')
             date_third_payment = convert_unix_to_date_time(date_third_payment)
-            date_won = convert_item(lead=lead, custom_fields_dict=data, need_item='45')
+            date_won = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='45')
             date_won = convert_unix_to_date_time(date_won)
-            date_lost = convert_item(lead=lead, custom_fields_dict=data, need_item='46')
+            date_lost = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='46')
             date_lost = convert_unix_to_date_time(date_lost)
-            application_source = convert_item(lead=lead, custom_fields_dict=data, need_item='47')
-            taken = convert_item(lead=lead, custom_fields_dict=data, need_item='48')
-            take_speed = convert_item(lead=lead, custom_fields_dict=data, need_item='49')
+            application_source = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='47')
+            taken = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='48')
+            take_speed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='49')
             take_speed = convert_unix_to_date_time(take_speed)
-            rejection_reason = convert_item(lead=lead, custom_fields_dict=data, need_item='50')
-            failure_detail = convert_item(lead=lead, custom_fields_dict=data, need_item='51')
-            partner_agent = convert_item(lead=lead, custom_fields_dict=data, need_item='52')
-            project = convert_item(lead=lead, custom_fields_dict=data, need_item='53')
-            language = convert_item(lead=lead, custom_fields_dict=data, need_item='54')
-            formname = convert_item(lead=lead, custom_fields_dict=data, need_item='55')
-            transaction_classification = convert_item(lead=lead, custom_fields_dict=data, need_item='56')
+            rejection_reason = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='50')
+            failure_detail = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='51')
+            partner_agent = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='52')
+            project = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='53')
+            language = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='54')
+            formname = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='55')
+            transaction_classification = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='56')
 
             record_to_insert = (
                 lead_id, was_in_a_new_application, was_in_manager, was_in_hired, was_trying_to_contact,
@@ -538,25 +618,25 @@ def get_custom_fields_record(data: json) -> list:
 
 def get_utm_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
-    logging.info('Возвращаю список записей для записи в базу')
+    logging.info('Возвращаю список записей для записи в базу utm')
     records_to_insert = []
     try:
         for lead in data.keys():
             lead_id = int(lead)
-            fbclid = convert_item_2(lead=lead, custom_fields_dict=data, need_item='1')
-            yclid = convert_item_2(lead=lead, custom_fields_dict=data, need_item='2')
-            gclid = convert_item_2(lead=lead, custom_fields_dict=data, need_item='3')
-            gclientid = convert_item_2(lead=lead, custom_fields_dict=data, need_item='4')
-            utm_from = convert_item_2(lead=lead, custom_fields_dict=data, need_item='5')
-            utm_source = convert_item_2(lead=lead, custom_fields_dict=data, need_item='6')
-            utm_medium = convert_item_2(lead=lead, custom_fields_dict=data, need_item='7')
-            utm_campaign = convert_item_2(lead=lead, custom_fields_dict=data, need_item='8')
-            utm_term = convert_item_2(lead=lead, custom_fields_dict=data, need_item='9')
-            utm_content = convert_item_2(lead=lead, custom_fields_dict=data, need_item='10')
-            utm_referrer = convert_item_2(lead=lead, custom_fields_dict=data, need_item='11')
-            ym_uid = convert_item_2(lead=lead, custom_fields_dict=data, need_item='12')
-            ym_counter = convert_item_2(lead=lead, custom_fields_dict=data, need_item='13')
-            roistat = convert_item_2(lead=lead, custom_fields_dict=data, need_item='14')
+            fbclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='1')
+            yclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='2')
+            gclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='3')
+            gclientid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='4')
+            utm_from = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='5')
+            utm_source = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='6')
+            utm_medium = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='7')
+            utm_campaign = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='8')
+            utm_term = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='9')
+            utm_content = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='10')
+            utm_referrer = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='11')
+            ym_uid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='12')
+            ym_counter = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='13')
+            roistat = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='14')
 
             record_to_insert = (lead_id, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
                                 utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat)
@@ -565,6 +645,76 @@ def get_utm_record(data: json) -> list:
         return records_to_insert
     except Exception as error:
         logging.error(f'get_utm_record: {error}')
+
+
+def get_object_fields_record(data: json) -> list:
+    """Возвращает список записей для записи в базу object"""
+
+    records_to_insert = []
+    logging.info('Возвращаю список записей для записи в базу для object')
+    try:
+        for lead in data.keys():
+            lead_id = int(lead)
+            project = convert_item_object(lead=lead, custom_fields_dict=data, need_item='1')
+            quarter = convert_item_object(lead=lead, custom_fields_dict=data, need_item='2')
+            lot_name = convert_item_object(lead=lead, custom_fields_dict=data, need_item='3')
+            object_type = convert_item_object(lead=lead, custom_fields_dict=data, need_item='4')
+            lot_price = convert_item_object(lead=lead, custom_fields_dict=data, need_item='5')
+            sqm = convert_item_object(lead=lead, custom_fields_dict=data, need_item='6')
+            usd_m2 = convert_item_object(lead=lead, custom_fields_dict=data, need_item='7')
+            house = convert_item_object(lead=lead, custom_fields_dict=data, need_item='8')
+
+            record_to_insert = (lead_id, project, quarter, lot_name, object_type, lot_price, sqm, usd_m2, house)
+
+            records_to_insert.append(record_to_insert)
+        return records_to_insert
+    except Exception as error:
+        logging.error(f'get_object_fields_record: {error}')
+
+
+def get_finance_fields_record(data: json) -> list:
+    """Возвращает список записей для записи в базу finance"""
+
+    records_to_insert = []
+    logging.info('Возвращаю список записей для записи в базу для finance')
+    try:
+        for lead in data.keys():
+            lead_id = int(lead)
+            deposit_done = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='1')
+            deposit_payment_method = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='2')
+            deposit_amount = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='3')
+            deposite_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='4')
+            deposite_date = convert_unix_to_date_time(deposite_date)
+            num_of_contract = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='5')
+            date_of_contract = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='6')
+            date_of_contract = convert_unix_to_date_time(date_of_contract)
+            construction_completion_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='7')
+            construction_completion_date = convert_unix_to_date_time(construction_completion_date)
+            payment_source = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='8')
+            payment_system = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='9')
+            st_payment_amount = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='10')
+            st_payment_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='11')
+            st_payment_date = convert_unix_to_date_time(st_payment_date)
+            nd_payment_amount = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='12')
+            nd_payment_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='13')
+            nd_payment_date = convert_unix_to_date_time(nd_payment_date)
+            rd_payment_amount = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='14')
+            rd_payment_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='15')
+            rd_payment_date = convert_unix_to_date_time(rd_payment_date)
+            th_payment_amount = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='16')
+            th_payment_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='17')
+            th_payment_date = convert_unix_to_date_time(th_payment_date)
+
+            record_to_insert = (lead_id, deposit_done, deposit_payment_method, deposit_amount, deposite_date,
+                                num_of_contract, date_of_contract, construction_completion_date,
+                                construction_completion_date, payment_source, payment_system, st_payment_amount,
+                                st_payment_date, nd_payment_amount, nd_payment_date, rd_payment_amount,
+                                rd_payment_date, th_payment_amount, th_payment_date)
+
+            records_to_insert.append(record_to_insert)
+        return records_to_insert
+    except Exception as error:
+        logging.error(f'get_finance_fields_record: {error}')
 
 
 def get_lead_status_changed(data) -> list:

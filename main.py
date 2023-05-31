@@ -2,7 +2,7 @@ import DataFunc
 from MainFunc import first_insert, create_dict, create_api, get_token, create_api_filter, delete_all_files, \
     first_insert_reverse
 from DB_Operations import insert_leads, insert_custom_fields, insert_utm_table, update_leads_pipelines_status_date, \
-    update_lost_stage
+    update_lost_stage, insert_object_table, insert_finance_table
 
 # авторизация и получение первого токена
 get_token()
@@ -22,6 +22,10 @@ create_dict(funcc=DataFunc.get_leads_custom_fields_dict, dict_name='leads', seco
             prefix='Dict')
 create_dict(funcc=DataFunc.get_custom_fields_dict, dict_name='leads_custom_fields',
             second_dict_name='custom_fields', prefix='Dict', extra_prefix='Dict')
+create_dict(funcc=DataFunc.get_custom_object_dict, dict_name='leads_custom_fields',
+            second_dict_name='object_fields', prefix='Dict', extra_prefix='Dict')
+create_dict(funcc=DataFunc.get_custom_finance_dict, dict_name='leads_custom_fields',
+            second_dict_name='finance_fields', prefix='Dict', extra_prefix='Dict')
 create_dict(funcc=DataFunc.get_utm_dict, dict_name='leads_custom_fields', second_dict_name='utm', prefix='Dict',
             extra_prefix='Dict')
 
@@ -39,6 +43,14 @@ first_insert(funcc=DataFunc.get_lost_stage, insert_funcc=update_lost_stage, name
 # запись custom_fields
 first_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=insert_custom_fields,
              extra_prefix='Dict', name_of_data='custom_fields')
+
+# запись object_fields
+first_insert(funcc=DataFunc.get_object_fields_record, insert_funcc=insert_object_table,
+             extra_prefix='Dict', name_of_data='object_fields')
+
+# запись finance_fields
+first_insert(funcc=DataFunc.get_finance_fields_record, insert_funcc=insert_finance_table,
+             extra_prefix='Dict', name_of_data='finance_fields')
 
 # запись utm_table
 first_insert(funcc=DataFunc.get_utm_record, insert_funcc=insert_utm_table,

@@ -10,6 +10,7 @@ logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m
 
 def db_decorator(func):
     """Декоратор для записи и подключения к базе"""
+
     def inner(records_to_insert):
         try:
             if len(records_to_insert) > 0:
@@ -34,6 +35,7 @@ def db_decorator(func):
 
 def db_create_decorator(func):
     """Декоратор для создания сущностей в базе"""
+
     def inner():
         try:
             logging.info('Запускаю db_create_decorator')
@@ -54,6 +56,7 @@ def db_create_decorator(func):
 
 def db_select_decorator(func):
     """Декоратор для выбора из базы"""
+
     def inner():
         try:
             logging.info('Запускаю db_select_decorator')
@@ -75,6 +78,7 @@ def db_select_decorator(func):
 
 def db_delete_decorator(func):
     """Декоратор для удаления из базы"""
+
     def inner(name_of_table):
         try:
             logging.info('Запускаю db_delete_decorator')
@@ -95,6 +99,7 @@ def db_delete_decorator(func):
 
 def db_delete_leads_decorator(func):
     """Декарот для удаления сделок"""
+
     def inner(delete_list):
         try:
             logging.info('Запускаю db_delete_decorator_new')
@@ -290,6 +295,7 @@ def create_table_object_table(connection, cursor) -> None:
     except Exception as error:
         logging.error(f'create_table_object_table: {error}')
 
+
 @db_create_decorator
 def create_table_finance_table(connection, cursor) -> None:
     """Cоздает таблицу финансы"""
@@ -319,6 +325,7 @@ def create_table_finance_table(connection, cursor) -> None:
         logging.info('CREATE TABLE FINANCE TABLE')
     except Exception as error:
         logging.error(f'create_table_finance_table: {error}')
+
 
 @db_create_decorator
 def create_table_tk(connection, cursor) -> None:
@@ -665,6 +672,7 @@ def update_object_table(connection, cursor, records_to_insert: list) -> None:
     except Exception as error:
         logging.error(f'update_object_table: {error}')
 
+
 @db_decorator
 def update_finance_table(connection, cursor, records_to_insert: list) -> None:
     """Обновляет finance в базе"""
@@ -695,6 +703,8 @@ def update_finance_table(connection, cursor, records_to_insert: list) -> None:
         connection.commit()
     except Exception as error:
         logging.error(f'update_finance_table: {error}')
+
+
 @db_decorator
 def update_lost_stage(connection, cursor, records_to_insert: list) -> None:
     """Записывает проигранный этап в сделку"""
