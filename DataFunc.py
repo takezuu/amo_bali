@@ -304,7 +304,7 @@ def get_statuses(pipelines: json) -> dict:
         logging.error(f'get_statuses: {error}')
 
 
-def get_leads_custom_fields_dict(leads) -> dict:
+def  get_leads_custom_fields_dict(leads) -> dict:
     """Возвращает словарь лидов с дополнительными полями"""
     try:
         archive_pipelines = read_data_file(name_of_data='archive_pipelines', page_num=1, extra_prefix='Dict')
@@ -312,7 +312,7 @@ def get_leads_custom_fields_dict(leads) -> dict:
         leads = leads['_embedded']['leads']
         logging.info('Создаю словарь пользователей и доп.полей')
         return {
-            lead['id']: [[field['field_id'], field['values'][0]['value']] for field in lead['custom_fields_values']]
+            lead['id']: [[str(field['field_id']), field['values'][0]['value']] for field in lead['custom_fields_values']]
             for lead in leads if lead['custom_fields_values'] and (str(lead['pipeline_id']) not in archive_pipelines and
                                                                    str(lead['pipeline_id']) not in block_pipelines)}
     except Exception as error:
@@ -327,7 +327,7 @@ def get_leads_custom_fields_dict_update(leads) -> dict:
         leads = leads['_embedded']['leads']
         logging.info('Создаю словарь пользователей и доп.полей для обновления')
         return {
-            lead['id']: [[field['field_id'], field['values'][0]['value']] for field in lead['custom_fields_values']]
+            lead['id']: [[str(field['field_id']), field['values'][0]['value']] for field in lead['custom_fields_values']]
             for lead in leads if lead['custom_fields_values'] and
                                  ((str(lead['pipeline_id']) not in archive_pipelines and
                                    str(lead['pipeline_id']) not in block_pipelines) and
