@@ -270,6 +270,57 @@ def create_table_pipeline(connection, cursor) -> None:
 
 
 @db_create_decorator
+def create_table_object_table(connection, cursor) -> None:
+    """Cоздает таблицу объекта"""
+    try:
+        logging.info('create_table_object_table')
+        create_query = """CREATE TABLE object_table(
+        ID INT PRIMARY KEY NOT NULL ,
+        Проект TEXT,
+        Квартал TEXT,
+        Название_объекта TEXT,
+        Тип_помещения TEXT,
+        Цена_объекта INT,
+        S_м2 TEXT,
+        Цена_за_м2 INT,
+        Дом TEXT);"""
+        cursor.execute(create_query)
+        connection.commit()
+        logging.info('CREATE TABLE OBJECT TABLE')
+    except Exception as error:
+        logging.error(f'create_table_object_table: {error}')
+
+@db_create_decorator
+def create_table_finance_table(connection, cursor) -> None:
+    """Cоздает таблицу финансы"""
+    try:
+        logging.info('create_table_finance_table')
+        create_query = """CREATE TABLE finance_table(
+        ID INT PRIMARY KEY NOT NULL,
+        Депозит_сделан TEXT,
+        Способ_оплаты_депозита TEXT,
+        Сумма_депозита INT,
+        Дата_оплаты_депозита TIMESTAMP,
+        Номер_договора TEXT,
+        Дата_подписания_договора TIMESTAMP,
+        Дата_завершения_строительства TIMESTAMP,
+        Источник_платежа TEXT,
+        Система_оплаты TEXT,
+        Сумма_первого_платежа INT,
+        Дата_первого_платежа TIMESTAMP,
+        Сумма_второго_платежа INT,
+        Дата_второго_платежа TIMESTAMP,
+        Сумма_третьего_платежа INT,
+        Дата_третьего_платежа TIMESTAMP,
+        Сумма_четвертого_платежа INT,
+        Дата_четвертого_платежа TIMESTAMP);"""
+        cursor.execute(create_query)
+        connection.commit()
+        logging.info('CREATE TABLE FINANCE TABLE')
+    except Exception as error:
+        logging.error(f'create_table_finance_table: {error}')
+
+@db_create_decorator
 def create_table_tk(connection, cursor) -> None:
     """Cоздает таблицу тк"""
     try:
