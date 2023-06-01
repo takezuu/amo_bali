@@ -37,12 +37,12 @@ first_insert(funcc=DataFunc.get_lead_record, insert_funcc=insert_leads, name_of_
 first_insert_reverse(funcc=DataFunc.get_lead_status_changed, insert_funcc=update_leads_pipelines_status_date,
                      name_of_data='lead_status_changed')
 
-# запись lost_stage в leads_table
-first_insert(funcc=DataFunc.get_lost_stage, insert_funcc=update_lost_stage, name_of_data='lead_status_changed')
-
 # запись custom_fields
 first_insert(funcc=DataFunc.get_custom_fields_record, insert_funcc=insert_custom_fields,
              extra_prefix='Dict', name_of_data='custom_fields')
+
+# запись lost_stage в leads_table
+first_insert(funcc=DataFunc.get_lost_stage, insert_funcc=update_lost_stage, name_of_data='lead_status_changed')
 
 # запись object_fields
 first_insert(funcc=DataFunc.get_object_fields_record, insert_funcc=insert_object_table,
