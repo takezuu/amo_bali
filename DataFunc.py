@@ -788,17 +788,18 @@ def get_lost_stage(data) -> list:
             if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in archive_pipelines:
                 if str(lead['value_after'][0]['lead_status']['pipeline_id']) not in block_pipelines:
                     if lead['value_after'][0]['lead_status']['id'] == 143:
+                        print(lead['value_after'])
                         lost_stage_list.append([(lead['value_before'][0]['lead_status']['pipeline_id'],
                                                  lead['value_before'][0]['lead_status']['id']), lead['entity_id']])
 
         final_lost_stage = []
         for lead in lost_stage_list:
             pipeline = lead[0][0]
-            if pipeline not in [5298025, 6229330, 5297782, 6245694, 6181218, 6437666, 6693290, 62293]:
-                pipeline = statuses_dict[f'{pipeline}']
-                for stage in pipeline:
-                    if stage[0] == lead[0][1]:
-                        final_lost_stage.append((stage[1], lead[1]))
+            # if pipeline not in [5298025, 6229330, 5297782, 6245694, 6181218, 6437666, 6693290, 622930]:
+            pipeline = statuses_dict[f'{pipeline}']
+            for stage in pipeline:
+                if stage[0] == lead[0][1]:
+                    final_lost_stage.append((stage[1], lead[1]))
 
         return final_lost_stage
 
@@ -826,11 +827,11 @@ def get_lost_stage_update(data):
         final_lost_stage = []
         for lead in lost_stage_list:
             pipeline = lead[0][0]
-            if pipeline not in [5298025, 6229330, 5297782, 6245694, 6181218, 6437666, 6693290, 62293]:
-                pipeline = statuses_dict[f'{pipeline}']
-                for stage in pipeline:
-                    if stage[0] == lead[0][1]:
-                        final_lost_stage.append((stage[1], lead[1]))
+            # if pipeline not in [5298025, 6229330, 5297782, 6245694, 6181218, 6437666, 6693290, 622930]:
+            pipeline = statuses_dict[f'{pipeline}']
+            for stage in pipeline:
+                if stage[0] == lead[0][1]:
+                    final_lost_stage.append((stage[1], lead[1]))
 
         return final_lost_stage
 
