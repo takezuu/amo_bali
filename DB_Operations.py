@@ -226,11 +226,8 @@ def create_table_utm(connection, cursor) -> None:
         logging.info('create_table_utm')
         create_query = """CREATE TABLE utm_table(
         ID INT PRIMARY KEY NOT NULL,
-        fbclid TEXT,
         yclid TEXT,
         gclid TEXT,
-        gclientid TEXT,
-        utm_from TEXT,
         utm_source TEXT,
         utm_medium TEXT,
         utm_campaign TEXT,
@@ -238,8 +235,8 @@ def create_table_utm(connection, cursor) -> None:
         utm_content TEXT,
         utm_referrer TEXT,
         ym_uid TEXT,
-        ym_counter TEXT,
-        roistat TEXT);"""
+        roistat TEXT,
+        from TEXT);"""
         cursor.execute(create_query)
         connection.commit()
         logging.info('CREATE TABLE UTM')
@@ -395,9 +392,9 @@ def insert_utm_table(connection, cursor, records_to_insert: list) -> None:
     try:
         logging.info(f'insert_utm_table {len(records_to_insert)}')
         insert_query = """INSERT INTO utm_table (
-                ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
-                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
+                ID, yclid, gclid, utm_source, utm_medium,
+                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, roistat, from) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)"""
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
     except Exception as error:
@@ -638,16 +635,15 @@ def update_utm_table(connection, cursor, records_to_insert: list) -> None:
     try:
         logging.info(f'update_utm_table {len(records_to_insert)}')
         update_query = """INSERT INTO utm_table (
-                ID, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
-                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat) \
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                ID, yclid, gclid, utm_source, utm_medium,
+                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, roistat, from) \
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET
-                fbclid = EXCLUDED.fbclid, yclid = EXCLUDED.yclid, gclid = EXCLUDED.gclid,
-                gclientid = EXCLUDED.gclientid,
-                utm_from = EXCLUDED.utm_from, utm_source = EXCLUDED.utm_source, utm_medium = EXCLUDED.utm_medium,
+                yclid = EXCLUDED.yclid, gclid = EXCLUDED.gclid,
+                utm_source = EXCLUDED.utm_source, utm_medium = EXCLUDED.utm_medium,
                 utm_campaign = EXCLUDED.utm_campaign, utm_term = EXCLUDED.utm_term, utm_content = EXCLUDED.utm_content,
-                utm_referrer = EXCLUDED.utm_referrer, ym_uid = EXCLUDED.ym_uid, ym_counter = EXCLUDED.ym_counter,
-                roistat = EXCLUDED.roistat"""
+                utm_referrer = EXCLUDED.utm_referrer, ym_uid = EXCLUDED.ym_uid,
+                roistat = EXCLUDED.roistat, from = EXCLUDED.from"""
         cursor.executemany(update_query, records_to_insert)
         connection.commit()
     except Exception as error:

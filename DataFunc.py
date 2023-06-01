@@ -429,9 +429,8 @@ def get_custom_finance_dict(leads_custom_fields_dict: dict) -> dict:
 
 def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями utm"""
-    custom_fields = {'fbclid': 1, 'yclid': 2, 'gclid': 3, 'gclientid': 4, 'from': 5,
-                     'utm_source': 6, 'utm_medium': 7, 'utm_campaign': 8, 'utm_term': 9, 'utm_content': 10,
-                     'utm_referrer': 11, '_ym_uid': 12, '_ym_counter': 13, 'roistat': 14}
+    custom_fields = {'149': 1, '148': 2, '135': 3, '133': 4, '134': 5, '136': 6, '131': 7,
+                     '137': 8, '146': 9, '138': 10, '144': 11,}
     leads_dict = leads_custom_fields_dict
 
     try:
@@ -441,7 +440,7 @@ def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
             in leads_dict.keys()}
         # очищение от пустых лидов без доп.полей
         utm_dict = {lead: custom_fields for lead, custom_fields in utm_dict.items() if custom_fields}
-        logging.info('Создаю словарь доп.полей')
+        logging.info('Создаю словарь доп.полей utm')
         return utm_dict
     except Exception as error:
         logging.error(f'get_utm_dict: {error}')
@@ -452,15 +451,9 @@ def convert_item_custom(lead: str, custom_fields_dict: dict, need_item: str):
     try:
         for item in custom_fields_dict[lead]:
             if need_item in item:
-                if need_item in ['6', '8', '10']:
-                    try:
-                        return int(item[need_item])
-                    except ValueError:
-                        return float(item[need_item])
-                else:
                     return item[need_item]
     except Exception as error:
-        logging.error(f'convert_item: {error}')
+        logging.error(f'convert_item_custom: {error}')
 
 
 def convert_item_utm(lead: str, custom_fields_dict: dict, need_item: str) -> str:
@@ -470,7 +463,7 @@ def convert_item_utm(lead: str, custom_fields_dict: dict, need_item: str) -> str
             if need_item in item:
                 return str(item[need_item])
     except Exception as error:
-        logging.error(f'convert_item_2: {error}')
+        logging.error(f'convert_item_utm: {error}')
 
 
 def convert_item_object(lead: str, custom_fields_dict: dict, need_item: str):
@@ -486,7 +479,7 @@ def convert_item_object(lead: str, custom_fields_dict: dict, need_item: str):
                 else:
                     return item[need_item]
     except Exception as error:
-        logging.error(f'convert_item: {error}')
+        logging.error(f'convert_item_object: {error}')
 
 
 def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
@@ -502,7 +495,7 @@ def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
                 else:
                     return item[need_item]
     except Exception as error:
-        logging.error(f'convert_item: {error}')
+        logging.error(f'convert_item_finance: {error}')
 
 
 def get_custom_fields_record(data: json) -> list:
@@ -524,9 +517,7 @@ def get_custom_fields_record(data: json) -> list:
             was_waiting_for_prepayment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='9')
             was_in_receiving_prepayment = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='10')
             was_in_details_received = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='11')
-
             was_in_a_contract_with_a_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='12')
-
             was_in_the_contract_to_the_client = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='13')
             was_agreed_to_in_the_contract = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='14')
             was_he_agreement_was_signed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='15')
@@ -557,10 +548,8 @@ def get_custom_fields_record(data: json) -> list:
             date_prepayment_received = convert_unix_to_date_time(date_prepayment_received)
             date_details_received = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='31')
             date_details_received = convert_unix_to_date_time(date_details_received)
-
             date_contract_sent_to_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='32')
             date_contract_sent_to_lawyer = convert_unix_to_date_time(date_contract_sent_to_lawyer)
-
             date_contract_sent_to_customer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='33')
             date_contract_sent_to_customer = convert_unix_to_date_time(date_contract_sent_to_customer)
             date_contract_agreed = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='34')
@@ -630,23 +619,20 @@ def get_utm_record(data: json) -> list:
     try:
         for lead in data.keys():
             lead_id = int(lead)
-            fbclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='1')
-            yclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='2')
-            gclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='3')
-            gclientid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='4')
-            utm_from = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='5')
-            utm_source = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='6')
-            utm_medium = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='7')
-            utm_campaign = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='8')
-            utm_term = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='9')
-            utm_content = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='10')
-            utm_referrer = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='11')
-            ym_uid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='12')
-            ym_counter = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='13')
-            roistat = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='14')
+            yclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='1')
+            gclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='2')
+            utm_source = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='3')
+            utm_medium = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='4')
+            utm_campaign = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='5')
+            utm_term = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='6')
+            utm_content = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='7')
+            utm_referrer = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='8')
+            ym_uid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='9')
+            roistat = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='10')
+            from_ = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='11')
 
-            record_to_insert = (lead_id, fbclid, yclid, gclid, gclientid, utm_from, utm_source, utm_medium,
-                                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, ym_counter, roistat)
+            record_to_insert = (lead_id, yclid, gclid, utm_source, utm_medium,
+                                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, roistat, from_)
 
             records_to_insert.append(record_to_insert)
         return records_to_insert
