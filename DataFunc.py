@@ -360,7 +360,7 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
                      '1151863': 46, '1160345': 47, '1147847': 48,
                      '1126883': 49, '1160341': 50, '1152879': 51,
                      '1151841': 52, '1155425': 53, '1152877': 54,
-                     '1151843': 55, '1155423': 56,}
+                     '1151843': 55, '1155423': 56, '1160265': 57}
 
     leads_dict = leads_custom_fields_dict
 
@@ -409,7 +409,7 @@ def get_custom_finance_dict(leads_custom_fields_dict: dict) -> dict:
                       '1161674': 7, '642423': 8, '642307': 9,
                       '642311': 10, '642317': 11, '642313': 12,
                       '642321': 13, '642315': 14, '642371': 15,
-                      '1101317': 16, '1101319': 17}
+                      '1101317': 16, '1101319': 17, '1162503': 18}
 
     leads_dict = leads_custom_fields_dict
 
@@ -487,7 +487,7 @@ def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
     try:
         for item in custom_fields_dict[lead]:
             if need_item in item:
-                if need_item in ['3', '10', '12', '14', '16']:
+                if need_item in ['3', '10', '12', '14', '18']:
                     try:
                         return int(item[need_item])
                     except ValueError:
@@ -586,6 +586,7 @@ def get_custom_fields_record(data: json) -> list:
             date_contract_prepared = convert_unix_to_date_time(date_contract_prepared)
             date_agreed_by_the_lawyer = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='56')
             date_agreed_by_the_lawyer = convert_unix_to_date_time(date_agreed_by_the_lawyer)
+            client_folder = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='57')
 
             record_to_insert = (
                 lead_id, was_in_a_new_application, was_in_manager, was_in_hired, was_trying_to_contact,
@@ -604,7 +605,7 @@ def get_custom_fields_record(data: json) -> list:
                 date_third_payment, date_won, date_lost, application_source, taken, take_speed, rejection_reason,
                 failure_detail, partner_agent, project, language, formname, transaction_classification,
                 was_in_contract_preparation, was_in_the_treaty_prepared, was_agreed_with_the_lawyer,
-                date_contract_preparation, date_contract_prepared, date_agreed_by_the_lawyer)
+                date_contract_preparation, date_contract_prepared, date_agreed_by_the_lawyer, client_folder)
 
             records_to_insert.append(record_to_insert)
         return records_to_insert
@@ -697,12 +698,13 @@ def get_finance_fields_record(data: json) -> list:
             th_payment_amount = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='16')
             th_payment_date = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='17')
             th_payment_date = convert_unix_to_date_time(th_payment_date)
+            final_lot_price = convert_item_finance(lead=lead, custom_fields_dict=data, need_item='18')
 
             record_to_insert = (lead_id, deposit_done, deposit_payment_method, deposit_amount, deposite_date,
                                 num_of_contract, date_of_contract, construction_completion_date,
                                 payment_source, payment_system, st_payment_amount,
                                 st_payment_date, nd_payment_amount, nd_payment_date, rd_payment_amount,
-                                rd_payment_date, th_payment_amount, th_payment_date)
+                                rd_payment_date, th_payment_amount, th_payment_date, final_lot_price)
 
             records_to_insert.append(record_to_insert)
         return records_to_insert
