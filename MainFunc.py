@@ -31,6 +31,23 @@ def api_decorator(func):
     return inner
 
 
+def api_patch_decorator(func):
+    """Цикл while для api функций"""
+
+    def inner():
+        try:
+            logging.info('Запускаю api_post_decorator')
+            tokens = DB_Operations.read_tokens()
+            req = True
+            while req:
+                req = func(tokens)
+
+        except Exception as error:
+            logging.error(f'api_post_decorator: {error}')
+
+    return inner
+
+
 def general_decorator(func):
     """Цикл while для функций"""
 
@@ -186,6 +203,18 @@ def delete_deleted_leads(page_num: int, funcc, delete_funcc, name_of_data: str =
     records_to_delete = funcc(data=file_data)
     delete_funcc(records_to_delete)
     return True
+
+
+@api_patch_decorator
+def patch_api(tokens: tuple) -> None:
+    """Пост запрос через api"""
+    try:
+        logging.info(f'Работает patch_api')
+        id_dates_list = DB_Operations.select_sign_data()
+        data = DataFunc.id_date_list(id_dates_list=id_dates_list)
+        api_requests.api_patch_sign_date(tokens=tokens, lead_id_dates=data)
+    except Exception as error:
+        logging.error(f'create_api: {error}')
 
 
 def get_token() -> None:

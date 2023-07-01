@@ -51,3 +51,36 @@ def api_get_deleted_leads(tokens: tuple, page_num: int = 1) -> json:
         return leads_request.json()
     except Exception as error:
         logging.error(f'api_get_deleted_leads: {error}')
+
+
+def api_patch_sign_date(tokens: tuple, lead_id_dates: list) -> json:
+    """Записывает в амо дату окончания строительства"""
+    access_token = tokens[0]
+    api_call_header = {'Authorization': 'Bearer ' + access_token}
+
+    for lead_id_date in lead_id_dates:
+
+        json_data = {
+            "id": lead_id_date[0],
+            "custom_fields_values": [
+            {
+                "field_id": 1161674,
+                "values": [
+                    {
+                        "value": lead_id_date[1]
+                    }
+                ]
+            }
+        ]
+        }
+
+        try:
+            logging.info(f'Делаю post запрос sign_date {lead_id_date}')
+            leads_request = requests.patch(
+                f'{UserData.CLIENT_URL}api/v4/leads/{lead_id_date[0]}',
+                headers=api_call_header, verify=True, json=json_data)
+
+            print(leads_request.status_code)
+            print(leads_request.text)
+        except Exception as error:
+            logging.error(f'api_post_sign_date: {error}')

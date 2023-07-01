@@ -730,6 +730,18 @@ def read_tokens(cursor) -> tuple:
         logging.error(f'read_tokens: {error}')
 
 
+@db_select_decorator
+def select_sign_data(cursor) -> tuple:
+    """Читает токены из базы"""
+    try:
+        logging.info('select_sign_data')
+        select_query = """SELECT id, Дата_Договор_подписан FROM custom_fields_table"""
+        cursor.execute(select_query)
+        return cursor.fetchall()
+    except Exception as error:
+        logging.error(f'select_sign_data: {error}')
+
+
 @db_delete_decorator
 def delete_from_table(connection, cursor, name_of_table: str) -> None:
     """Удаляет все данные из таблицы"""

@@ -1,7 +1,7 @@
 import json
 import datetime
 import logging
-
+from dateutil.relativedelta import relativedelta
 from paths import my_log, my_f
 
 logging.basicConfig(format='%(asctime)s %(levelname)s: %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
@@ -430,7 +430,7 @@ def get_custom_finance_dict(leads_custom_fields_dict: dict) -> dict:
 def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями utm"""
     custom_fields = {'149': 1, '148': 2, '135': 3, '133': 4, '134': 5, '136': 6, '131': 7,
-                     '137': 8, '146': 9, '138': 10, '144': 11,}
+                     '137': 8, '146': 9, '138': 10, '144': 11, }
     leads_dict = leads_custom_fields_dict
 
     try:
@@ -451,7 +451,7 @@ def convert_item_custom(lead: str, custom_fields_dict: dict, need_item: str):
     try:
         for item in custom_fields_dict[lead]:
             if need_item in item:
-                    return item[need_item]
+                return item[need_item]
     except Exception as error:
         logging.error(f'convert_item_custom: {error}')
 
@@ -838,3 +838,16 @@ def get_lost_stage_update(data):
 
     except Exception as error:
         logging.error(f'get_lost_stage_update: {error}')
+
+
+def id_date_list(id_dates_list) -> list:
+    new_id_dates_list = list((id_data for id_data in id_dates_list if id_data[1] is not None))
+
+    final_id_date_list = []
+    for id_date in new_id_dates_list:
+        id_date = list(id_date)
+        id_date[1] += relativedelta(months=+21)
+        id_date[1] = int(round(id_date[1].timestamp()))
+        final_id_date_list.append(tuple(id_date))
+
+    return final_id_date_list
