@@ -1,9 +1,9 @@
 import DataFunc
 from MainFunc import create_dict, create_api, update_insert, update_token, create_api_filter, \
-    delete_all_files, get_deleated_lead, delete_deleted_leads, update_insert_reverse
+    delete_all_files, get_deleated_lead, delete_deleted_leads, update_insert_reverse, patch_api
 from DB_Operations import update_leads, update_custom_fields, update_utm_table, update_leads_pipelines_status_date, \
     delete_leads, update_lost_stage, insert_finance_table, insert_object_table, update_object_table, \
-    update_finance_table
+    update_finance_table, delete_custom_fields, delete_finance, delete_object, delete_utm
 
 # авторизация и получение нового токена
 update_token()
@@ -61,7 +61,11 @@ update_insert(funcc=DataFunc.get_utm_record, insert_funcc=update_utm_table,
               extra_prefix='Dict', name_of_data='utm')
 
 get_deleated_lead(api_name='delete')
-delete_deleted_leads(name_of_data='Deleted_leads', funcc=DataFunc.get_id_deleted_leads, delete_funcc=delete_leads)
+delete_deleted_leads(name_of_data='Deleted_leads', funcc=DataFunc.get_id_deleted_leads, delete_funcc1=delete_leads,
+                     delete_funcc2=delete_custom_fields, delete_funcc3=delete_finance, delete_funcc4=delete_object,
+                     delete_funcc5=delete_utm)
 
 # удаляет созданные файлы
 delete_all_files()
+
+patch_api()

@@ -97,7 +97,7 @@ def db_delete_decorator(func):
     return inner
 
 
-def db_delete_leads_decorator(func):
+def db_delete_leads_from_tables_decorator(func):
     """Декарот для удаления сделок"""
 
     def inner(delete_list):
@@ -768,7 +768,7 @@ def delete_table(connection, cursor, name_of_table: str) -> None:
         logging.error(f'delete_table: {error}')
 
 
-@db_delete_leads_decorator
+@db_delete_leads_from_tables_decorator
 def delete_leads(connection, cursor, delete_list) -> None:
     try:
         logging.info(f'delete_leads {len(delete_list)}')
@@ -778,3 +778,47 @@ def delete_leads(connection, cursor, delete_list) -> None:
         logging.info('DELETED LEADS')
     except Exception as error:
         logging.error(f'delete_leads: {error}')
+
+@db_delete_leads_from_tables_decorator
+def delete_custom_fields(connection, cursor, delete_list) -> None:
+    try:
+        logging.info(f'delete_custom_fields {len(delete_list)}')
+        delete_query = """DELETE FROM custom_fields_table WHERE ID = %s"""
+        cursor.executemany(delete_query, delete_list)
+        connection.commit()
+        logging.info('DELETED LEADS from custom')
+    except Exception as error:
+        logging.error(f'delete_custom_fields: {error}')
+
+@db_delete_leads_from_tables_decorator
+def delete_finance(connection, cursor, delete_list) -> None:
+    try:
+        logging.info(f'delete_finance {len(delete_list)}')
+        delete_query = """DELETE FROM finance_table WHERE ID = %s"""
+        cursor.executemany(delete_query, delete_list)
+        connection.commit()
+        logging.info('DELETED LEADS from finance')
+    except Exception as error:
+        logging.error(f'delete_finance: {error}')
+
+@db_delete_leads_from_tables_decorator
+def delete_object(connection, cursor, delete_list) -> None:
+    try:
+        logging.info(f'delete_finance {len(delete_list)}')
+        delete_query = """DELETE FROM object_table WHERE ID = %s"""
+        cursor.executemany(delete_query, delete_list)
+        connection.commit()
+        logging.info('DELETED LEADS from object')
+    except Exception as error:
+        logging.error(f'delete_object: {error}')
+
+@db_delete_leads_from_tables_decorator
+def delete_utm(connection, cursor, delete_list) -> None:
+    try:
+        logging.info(f'delete_utm {len(delete_list)}')
+        delete_query = """DELETE FROM utm_table WHERE ID = %s"""
+        cursor.executemany(delete_query, delete_list)
+        connection.commit()
+        logging.info('DELETED LEADS from utm')
+    except Exception as error:
+        logging.error(f'delete_utm: {error}')

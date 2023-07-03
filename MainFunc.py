@@ -194,14 +194,19 @@ def get_deleated_lead(page_num: int, api_name: str, tokens: tuple) -> bool:
 
 
 @general_decorator
-def delete_deleted_leads(page_num: int, funcc, delete_funcc, name_of_data: str = None) -> bool:
+def delete_deleted_leads(page_num: int, funcc, delete_funcc1, delete_funcc2, delete_funcc3, delete_funcc4,
+                         delete_funcc5, name_of_data: str = None) -> bool:
     try:
         logging.info(f'Работает delete_deleted_leads, page {page_num}')
         file_data = DataFunc.read_data_file(page_num=page_num, name_of_data=name_of_data)
     except FileNotFoundError:
         return False
     records_to_delete = funcc(data=file_data)
-    delete_funcc(records_to_delete)
+    delete_funcc1(records_to_delete)
+    delete_funcc2(records_to_delete)
+    delete_funcc3(records_to_delete)
+    delete_funcc4(records_to_delete)
+    delete_funcc5(records_to_delete)
     return True
 
 
