@@ -735,7 +735,7 @@ def select_sign_data(cursor) -> tuple:
     """Читает токены из базы"""
     try:
         logging.info('select_sign_data')
-        select_query = """SELECT id, Дата_Договор_подписан FROM custom_fields_table"""
+        select_query = """SELECT id, Дата_подписания_договора FROM finance_table"""
         cursor.execute(select_query)
         return cursor.fetchall()
     except Exception as error:
