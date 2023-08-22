@@ -491,7 +491,7 @@ def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
                     try:
                         return int(item[need_item])
                     except ValueError:
-                        return float(item[need_item])
+                        return round(float(item[need_item]))
                 else:
                     return item[need_item]
     except Exception as error:
