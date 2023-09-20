@@ -395,7 +395,7 @@ def insert_utm_table(connection, cursor, records_to_insert: list) -> None:
     try:
         logging.info(f'insert_utm_table {len(records_to_insert)}')
         insert_query = """INSERT INTO utm_table (
-                lead_id, utm_source, utm_medium, utm_campaign, roistat, referrer) \
+                id, utm_source, utm_medium, utm_campaign, roistat, referrer) \
                 VALUES (%s,%s,%s,%s,%s,%s)"""
         cursor.executemany(insert_query, records_to_insert)
         connection.commit()
@@ -647,7 +647,7 @@ def update_utm_table(connection, cursor, records_to_insert: list) -> None:
     try:
         logging.info(f'update_utm_table {len(records_to_insert)}')
         update_query = """INSERT INTO utm_table (
-                lead_id, utm_source, utm_medium, utm_campaign, roistat, referrer) \
+                id, utm_source, utm_medium, utm_campaign, roistat, referrer) \
                 VALUES (%s,%s,%s,%s,%s,%s)
                 ON CONFLICT (id) DO UPDATE SET
                 utm_source = EXCLUDED.utm_source, utm_medium = EXCLUDED.utm_medium,
