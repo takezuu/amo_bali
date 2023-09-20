@@ -362,7 +362,8 @@ def get_custom_fields_dict(leads_custom_fields_dict: dict) -> dict:
                      '1151841': 52, '1155425': 53, '1152877': 54,
                      '1151843': 55, '1155423': 56, '1160265': 57,
                      '1168239': 58, '1168237': 59, '1169217': 60,
-                     '1169219': 61}
+                     '1169219': 61, '1169401': 62, '1169949': 63,
+                     '1169947': 64}
 
     leads_dict = leads_custom_fields_dict
 
@@ -500,7 +501,7 @@ def convert_item_finance(lead: str, custom_fields_dict: dict, need_item: str):
         logging.error(f'convert_item_finance: {error}')
 
 
-def get_custom_fields_record(data: json) -> list:
+def     get_custom_fields_record(data: json) -> list:
     """Возвращает список записей для записи в базу"""
 
     records_to_insert = []
@@ -595,6 +596,10 @@ def get_custom_fields_record(data: json) -> list:
             date_constant_reservation = convert_unix_to_date(unix_time=date_constant_reservation)
             reservation_made = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='60')
             contract_marked = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='61')
+            how_find = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='62')
+            date_of_completion = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='63')
+            date_of_completion = convert_unix_to_date(unix_time=date_of_completion)
+            completion_stamped = convert_item_custom(lead=lead, custom_fields_dict=data, need_item='64')
             record_to_insert = (
                 lead_id, was_in_a_new_application, was_in_manager, was_in_hired, was_trying_to_contact,
                 was_in_presentation_sent, was_in_contact, was_in_a_meeting_start,
@@ -613,7 +618,8 @@ def get_custom_fields_record(data: json) -> list:
                 failure_detail, partner_agent, project, language, formname, transaction_classification,
                 was_in_contract_preparation, was_in_the_treaty_prepared, was_agreed_with_the_lawyer,
                 date_contract_preparation, date_contract_prepared, date_agreed_by_the_lawyer, client_folder,
-                date_contract, date_constant_reservation, reservation_made, contract_marked)
+                date_contract, date_constant_reservation, reservation_made, contract_marked, how_find,
+                date_of_completion, completion_stamped)
 
             records_to_insert.append(record_to_insert)
         return records_to_insert
