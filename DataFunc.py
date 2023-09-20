@@ -432,8 +432,7 @@ def get_custom_finance_dict(leads_custom_fields_dict: dict) -> dict:
 
 def get_utm_dict(leads_custom_fields_dict: dict) -> dict:
     """Возвращает преобразовыннй словарь лидов с дополнительными полями utm"""
-    custom_fields = {'149': 1, '148': 2, '135': 3, '133': 4, '134': 5, '136': 6, '131': 7,
-                     '137': 8, '146': 9, '138': 10, '144': 11, }
+    custom_fields = {'639243': 1, '639239': 2, '639241': 3, '639249': 4, '639251': 5}
     leads_dict = leads_custom_fields_dict
 
     try:
@@ -634,20 +633,13 @@ def get_utm_record(data: json) -> list:
     try:
         for lead in data.keys():
             lead_id = int(lead)
-            yclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='1')
-            gclid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='2')
-            utm_source = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='3')
-            utm_medium = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='4')
+            utm_source = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='1')
+            utm_medium = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='2')
             utm_campaign = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='5')
-            utm_term = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='6')
-            utm_content = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='7')
-            utm_referrer = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='8')
-            ym_uid = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='9')
             roistat = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='10')
-            from_ = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='11')
+            referrer = convert_item_utm(lead=lead, custom_fields_dict=data, need_item='10')
 
-            record_to_insert = (lead_id, yclid, gclid, utm_source, utm_medium,
-                                utm_campaign, utm_term, utm_content, utm_referrer, ym_uid, roistat, from_)
+            record_to_insert = (lead_id, utm_source, utm_medium, utm_campaign, roistat, referrer)
 
             records_to_insert.append(record_to_insert)
         return records_to_insert
